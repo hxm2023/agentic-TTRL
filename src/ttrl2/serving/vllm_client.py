@@ -25,10 +25,11 @@ class ServedPolicy:
     def __post_init__(self) -> None:
         self.client = OpenAI(base_url=self.endpoint, api_key="EMPTY")
 
-    def load_adapter(self, name: str, path: str) -> None:
+    def load_adapter(self, name: str, path: str, inplace: bool = False) -> None:
         resp = self.client._client.post(
             f"{self.endpoint}/load_lora_adapter",
-            json={"lora_name": name, "lora_path": path})
+            json={"lora_name": name, "lora_path": path,
+                  "load_inplace": inplace})
         resp.raise_for_status()
 
     def unload_adapter(self, name: str) -> None:
