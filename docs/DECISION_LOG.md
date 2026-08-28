@@ -61,7 +61,25 @@ Mandatory pre-read: `C:\Users\w1828\repos\agent-ttrl\phase01\EXPERIMENT_DECISION
 - **Compute spent**: ~0.03 GPUh calibration + installs. Falsification: if BoN-4
   headroom < 0.10 at D5-6 → re-calibrate subset or add difficulty.
 
-## D2 — (pending) framework smoke gate
+## D2-4 — Framework built + single-task smoke PASSED (2026-08-29)
 
-- Gate: full single-task pipeline works end-to-end on GPU1+GPU0 (format → rollout →
-  update → eval) before any batch.
+- **Built**: src/ttrl2/{gates, env, agent, trainer, serving} — two-scale gates
+  (ported, tested), tau2 tool-only episode wrapper, vLLM agent loop, group-credit
+  trainer (GRPO-style advantage-weighted policy gradient + KL-to-frozen-base on
+  tool-call token spans), served-policy with dynamic LoRA lifecycle.
+- **Smoke (task 0)**: frozen rollout (2 turns/2 calls, fail) → credit rows
+  [-0.5, -0.45] → update (32 rows, 1568 tokens, loss -0.76) → logit drift 8.79
+  (behavior changed, target ≥0.05) → adapter uploaded to vLLM → candidate
+  rollout ran. **GATE PASSED** (format→rollout→update→eval chain end-to-end).
+- **Blockers found & fixed** (all documented in COMPATIBILITY_PROFILE):
+  (1) flashinfer sampler/attention reject SM 12.x → triton_attn +
+  VLLM_USE_FLASHINFER_SAMPLER=0; (2) Qwen3.5-4B needs qwen3_xml parser;
+  (3) torch fallback delta-rule kernel OOM/autograd-inplace → fla 0.5.2;
+  (4) shared-base ref forward poisons grad forward → separate ref instance;
+  (5) memory: chunked logsumexp + gradient checkpointing + receipt truncation;
+  (6) runtime LoRA API needs VLLM_ALLOW_RUNTIME_LORA_UPDATING=1.
+- **Calibration datum**: 16 steps × lr 1e-4 on ONE episode → drift 8.79 (too
+  strong; collapse risk). Stream runs: lr 3e-5, steps 8, KL β=0.1; drift
+  monitored per episode (target 0.05-2.0).
+- **Compute spent**: ~0.3 GPUh (smoke + debug). Falsification: if the stream
+  cannot keep drift in [0.05, 2.0] while training, stop and report honestly.

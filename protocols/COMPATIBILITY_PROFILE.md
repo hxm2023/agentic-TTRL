@@ -29,13 +29,29 @@ in docs/DECISION_LOG.md + re-verification.
   profile. tau2-bench via PYTHONPATH=/root/autodl-tmp/tau2-bench/src (its pyproject
   requires py>=3.12; editable install rejected, PYTHONPATH used instead).
 
-## vLLM server flags (FROZEN 2026-08-29 D1 — 5090/Blackwell + Qwen3.5 findings)
+## vLLM server flags (FROZEN 2026-08-29 D1/D2-4 — 5090/Blackwell + Qwen3.5 findings)
 - `--attention-backend triton_attn` — REQUIRED: flashinfer wheel (0.6.14 from
   aliyun mirror) is compiled for CUDA < 12.9; its JIT check rejects SM 12.x.
 - `VLLM_USE_FLASHINFER_SAMPLER=0` — REQUIRED for the same reason (sampler path).
 - `--tool-call-parser qwen3_xml` — REQUIRED: Qwen3.5-4B chat template emits
   `<tool_call>` XML blocks (NOT Hermes JSON). Verified: hermes produces no calls.
 - `--enable-auto-tool-choice`, `--max-model-len 32768`, `--gpu-memory-utilization 0.92`.
+- `--enable-lora --max-lora-rank 64` + `VLLM_ALLOW_RUNTIME_LORA_UPDATING=1` —
+  REQUIRED for the dynamic adapter lifecycle (POST /v1/load_lora_adapter).
+  Verified in the D2 smoke: adapter upload + candidate rollout works.
+
+## Trainer (GPU0) findings (FROZEN 2026-08-29 D2-4)
+- flash-linear-attention 0.5.2 installed — REQUIRED: the transformers torch
+  fallback gated-delta-rule kernel OOMs/breaks autograd on grad forward.
+- The KL reference model MUST be a SEPARATE model instance: a no_grad forward
+  on the shared base object poisons the subsequent grad forward (Qwen3.5 hybrid
+  + fla interplay; verified — OOM 29GB vs 20.5GB clean).
+- Gradient checkpointing ON, use_cache=False, chunked logsumexp for logp.
+- Memory profile verified: 2×8.6GB models + training step at 5.2k tokens =
+  20.5GB peak on one 5090; backward 9.3s/row.
+- Update settings from smoke calibration: 16 steps × lr 1e-4 → drift 8.79 (too
+  strong); stream runs will use gentler settings with drift monitored per episode.
+- Training receipt context truncated to 400 chars (context, not action).
 
 ## Two-scale gates (FROZEN — reuse, not re-derive)
 - **GLOBAL** (commit/rollback): empirical-Bernstein e-process,
