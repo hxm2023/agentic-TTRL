@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.log
+wandb_api.txt
+*.key
+.env
+.aris/
+.claude/
+checkpoints/
+scratch/
+paper/*.pdf
