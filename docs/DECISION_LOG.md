@@ -39,6 +39,28 @@ Mandatory pre-read: `C:\Users\w1828\repos\agent-ttrl\phase01\EXPERIMENT_DECISION
   headroom ≥0.10 → pivot to mock domain or custom controlled env, re-record here.
   If Qwen3.5-4B fails tool-format smoke on vLLM → fall back to Qwen3-4B, re-record.
 
+## D1b — Calibration result (2026-08-29, autodl3 GPU1, ~0.03 GPUh)
+
+- **Result**: frozen Qwen3.5-4B, τ²-bench retail tool-only, 24 tasks (seed-0 sample
+  of base split): **success_rate = 0.167 (4/24)** — inside the [0.10, 0.30] gate.
+  107s total (avg 4.5s/task). All tasks replay; hidden evaluator verified against
+  reference trajectories (task 0/5/20/40 replay → True).
+- **Failure-mode analysis**: dominant failure = early stopping (1-3 tool calls then
+  final answer; reference trajectories use 4-10 calls). Task 5: 0 calls. Errors are
+  rare (4 receipt errors across 24 tasks). → The learning signal is clear: teach the
+  model to CONTINUE the identify→read→modify workflow. BoN-4 headroom estimate:
+  1-(0.833)^4 ≈ 0.52 (verified at D5-6).
+- **Server stack frozen**: conda ttrl2 (py3.11): torch 2.11.0+cu130, vllm 0.26.0,
+  trl 1.10.0, peft 0.20.0, transformers 5.16.1, openai 3.5.0. vLLM flags (5090
+  findings): `--attention-backend triton_attn`, `VLLM_USE_FLASHINFER_SAMPLER=0`
+  (flashinfer wheel compiled for CUDA<12.9, rejects SM 12.x), `--tool-call-parser
+  qwen3_xml` (Qwen3.5-4B emits `<tool_call>` XML, NOT hermes JSON).
+- **Decision**: D1 GATE PASSED. Main-run stream: full 114-task base (60% update /
+  40% eval); frozen baseline = the calibrated 0.167 (will re-measure on the full
+  eval set at D5-6). BoN-4 baseline for headroom at D5-6.
+- **Compute spent**: ~0.03 GPUh calibration + installs. Falsification: if BoN-4
+  headroom < 0.10 at D5-6 → re-calibrate subset or add difficulty.
+
 ## D2 — (pending) framework smoke gate
 
 - Gate: full single-task pipeline works end-to-end on GPU1+GPU0 (format → rollout →

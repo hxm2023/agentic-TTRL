@@ -24,8 +24,18 @@ in docs/DECISION_LOG.md + re-verification.
 - **GPU0 = LoRA training** (~20GB), **GPU1 = vLLM rollout** (~16GB). NEVER co-locate.
 
 ## Python env (autodl3, conda `ttrl2`, py 3.11)
-- torch 2.11.0+cu130, vllm 0.26.0, trl 1.10.0, peft 0.20.0, transformers (trl 1.10
-  compatible), pydantic>=2.7, numpy. Reuse agent-ttrl D10 profile.
+- torch 2.11.0+cu130, vllm 0.26.0, trl 1.10.0, peft 0.20.0, transformers 5.16.1,
+  openai 3.5.0, pydantic 2.13.4, numpy 2.3.5, gymnasium 1.3.0. Reuse agent-ttrl D10
+  profile. tau2-bench via PYTHONPATH=/root/autodl-tmp/tau2-bench/src (its pyproject
+  requires py>=3.12; editable install rejected, PYTHONPATH used instead).
+
+## vLLM server flags (FROZEN 2026-08-29 D1 — 5090/Blackwell + Qwen3.5 findings)
+- `--attention-backend triton_attn` — REQUIRED: flashinfer wheel (0.6.14 from
+  aliyun mirror) is compiled for CUDA < 12.9; its JIT check rejects SM 12.x.
+- `VLLM_USE_FLASHINFER_SAMPLER=0` — REQUIRED for the same reason (sampler path).
+- `--tool-call-parser qwen3_xml` — REQUIRED: Qwen3.5-4B chat template emits
+  `<tool_call>` XML blocks (NOT Hermes JSON). Verified: hermes produces no calls.
+- `--enable-auto-tool-choice`, `--max-model-len 32768`, `--gpu-memory-utilization 0.92`.
 
 ## Two-scale gates (FROZEN — reuse, not re-derive)
 - **GLOBAL** (commit/rollback): empirical-Bernstein e-process,

@@ -19,7 +19,6 @@ from pathlib import Path
 from openai import OpenAI
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src" / "tau2"))
 
 from ttrl2.agent.loop import rollout  # noqa: E402
 from ttrl2.env.tau2_env import Tau2Episode  # noqa: E402
