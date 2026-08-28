@@ -4,14 +4,45 @@
 deployment-period policy updates that measurably improve subsequent task performance
 in stateful tool-using agents. NOT paper-first (no top-venue requirement): the
 deliverable is **publishable-grade engineering + reproducible, honest experimental
-evidence** within weeks, strong enough to be a resume CORE project for
-大模型后训练算法工程师 positions (a bar that demands: real training, real
-improvement, real engineering, verifiable numbers).
+evidence** — URGENTLY (10-day window, user needs resume now), strong enough to be a
+resume CORE project for 大模型后训练算法工程师 positions (a bar that demands: real
+training, real improvement, real engineering, verifiable numbers, AND some
+innovation).
+
+**Innovation angle (user-mandated, 2026-08-29)**: the project must carry genuine
+(if compact) novelty. We reuse agent-ttrl's validated design assets (its Phase 0
+scoop-checked wedge + D6 coverage-simulator-frozen commit gate) and deliver the
+**first complete open-source implementation of two-scale safety-gated test-time RL
+for tool-using agents**: (1) LOCAL gate — evidence-gated action credit (E_hard/E_soft
+conflict detection, structured action groups); (2) GLOBAL gate — empirical-Bernstein
+e-process commit/rollback (α_total=0.05, frozen via 162-config coverage simulator).
+The novelty narrative: TTPO/TTRL do un-gated test-time updates; GTTA/ACE do context
+not parameters; none provide a complete, honest, reproducible two-scale safety
+mechanism. Our claim is engineering+measurement novelty on that gap, not a new
+optimizer.
 
 **Why agent-ttrl2 (fresh start)**: agent-ttrl (predecessor) ran M0-M6 over ~2 weeks
 and ended with a null result (no prequential gain on an easy environment) and a
 heavy protocol that slowed everything down. Its lessons are the requirements of
 this project.
+
+## Fast plan (10 days — replacing the 4-6 week ladder; statistical rigor slimmed by
+## user decision 2026-08-29: single-run/2-run exploratory main result, honest labels)
+
+| Day | Deliverable |
+|-----|-------------|
+| D1 | Env chosen (replayable tool env, initial success ≤0.3 verified) + Qwen3.5-4B (fallback Qwen3-4B) verified + compatibility profile frozen |
+| D2-4 | Minimal framework: episode-boundary LoRA updates (trl/peft) + frozen policy + vLLM server + structured action groups + full single-task smoke (format→rollout→update→eval) |
+| D5-6 | Frozen baseline numbers (headroom verified); BoN baseline optional 1 config |
+| D7-8 | **Main run: same-task-stream contrast** — update on first 60% tasks, evaluate on last 40%; 1-2 runs; behavior-drift diagnostics (pre/post update output distribution change, credit-outcome correlation) |
+| D9 | GitHub v0.1 release (README + reproduce.sh + results table + limitations) |
+| D10 | 1-page TECH_REPORT.md + resume bullets |
+
+**Slimmed**: ≥3 seeds → 1-2 runs labeled `exploratory, single-run`; budget ledger →
+simple rollout-count record; ablations → one commit-gate on/off; second model → cut.
+**Kept (value carriers)**: industry-recognized env; honest measurement incl. null;
+behavior-drift diagnostics (proves the update changed behavior — not a fake run);
+reproduce.sh works; GitHub release; TECH_REPORT.
 
 ## Lessons from agent-ttrl (MANDATORY — read `C:\Users\w1828\repos\agent-ttrl\phase01\EXPERIMENT_DECISION_LOG.md` D10-D14 first)
 
@@ -71,12 +102,15 @@ of whether the main result is positive or null (null is acceptable IF the framew
 
 ## Compute
 
-- **Server: autodl3 (TBD — ssh details pending; record here when given)** —
-  assume 1-2× 48-84GB GPUs. 4B LoRA + vLLM fits one 48GB card; two cards = trainer
-  + rollout separation. Checkpoint to persistent disk; resume-from-checkpoint
-  default. Results rsync + git push continuously.
-- Budget discipline: this is a resume project — a few hundred GPU·h total is the
-  envelope; fast iterations beat big batches.
+- **Server: `ssh autodl3`** (connect.westd.seetacloud.com:26084, root, key auth) —
+  **2× RTX 5090 32GB** + 754GB RAM + /root/autodl-tmp 450G, CUDA 13.2, ~2.78 元/h/card
+  (2.93 标价，9.5 折). Data disk 50GB → expand to 200GB when renting for real.
+- **Card layout (locked)**: GPU0 = LoRA training (~20GB), GPU1 = vLLM rollout
+  (~16GB) — each 32GB card fits one role; NEVER co-locate training+rollout on one
+  5090 (32GB OOM risk).
+- Budget: ~60-80 GPU·h total (~170-220 元 at 2-card rate) — D1-6 ~20 GPU·h,
+  D7-8 main ~40 GPU·h. Resume-from-checkpoint default; results rsync + git push
+  continuously. Most engineering days run on local RTX 5060 (no GPU rent burn).
 
 ## GitHub & Deliverables
 
