@@ -87,6 +87,30 @@ Mandatory pre-read: `C:\Users\w1828\repos\agent-ttrl\phase01\EXPERIMENT_DECISION
   carries episode credit (targets early stopping directly; verified locally).
 - **Compute spent**: ~1 GPUh (baselines + probes).
 
+## D7-8 — Main run results (2026-08-29, seed 0 = v3 config)
+
+- **v3 run (sound mechanism)**: failure-aware credit (success +0.5 all; failure:
+  identify/read neutral, modify -0.3, stop -0.5), lr 5e-6, steps 4, greedy
+  rollouts, transformers pipeline (adapter truly applied). Update phase: 68
+  episodes, 1.54 mean calls, 6/68 successes, drift 0.08→4.0 (max 6.86).
+  **Eval (46 sealed): frozen 0.109 = candidate 0.109 — ZERO flips. Behavior
+  genuinely changed (25/46 eval tasks differ; e.g., task 46: 0→5 calls) but
+  outcomes did not. Global gate: ROLLBACK (n=20, mean_gain 0.0).**
+- **Mechanistic explanation of the null**: (1) sparse positive signal — 6/68
+  update episodes succeed, so the model is rarely reinforced for correct
+  full-workflow behavior; (2) exploration gap — the missing modify-call
+  behavior can only be learned from positive examples of it, which the update
+  phase almost never produces; (3) the eval failures remain dominated by the
+  systematic early-stop that updates cannot flip without positive examples.
+  Consistent with agent-ttrl D12/D16/D17 nulls across three environments.
+- **Pipeline findings (all verified, all documented)**: vLLM 0.26 LoRA serving
+  no-op for Qwen3.5 hybrid; train-mode dropout corrupts generations after
+  updates (need eval()); uniform-negative credit collapses tool calling
+  (drift 13); temp-0.7 sampling drifts from the tool-call mode (use greedy).
+- **Seed 1 replication running** (identical config). Compute spent: ~6 GPUh
+  total (5 main-run attempts, most wasted on pipeline bugs — the price of
+  frontier-model serving quirks; the reproducible profile now avoids them).
+
 ## D7 — First ttrl run: aggressive settings collapse (2026-08-29)
 
 - **Observation**: steps 8 × lr 3e-5 with 24+ rows/episode accumulates too fast —
