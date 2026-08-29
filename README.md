@@ -58,15 +58,19 @@ GPU0 (trainer): episode-boundary updates
 | Arm | Eval success (46 sealed tasks) | Notes |
 |-----|-------------------------------|-------|
 | Frozen | 0.109 (5/46) | systematic early stopping before state changes |
-| Best-of-4 | 0.109 | deterministic failures; sampling does not help |
+| Best-of-4 (temp 0.7 and 1.2) | 0.109 | deterministic failures; sampling does not help |
 | Prompt probe | 0.109 | even a perfect instruction does not help |
-| TTRL candidate (seed 0) | 0.109 (5/46) | behavior changed (25/46 tasks differ) but 0 outcome flips |
-| TTRL + global gate | ROLLBACK | fail-closed at shadow n=20 (e-process lcb_gain −0.48 < 0.01) |
+| TTRL candidate (6 configs × seeds) | 0.109 | behavior changed (verified drift + eval behavior diffs) but 0 outcome flips in every config |
+| TTRL + global gate | ROLLBACK | fail-closed in every run (e-process lcb_gain < 0.01) |
+| Gate protection demo (poisoned adapter) | ROLLBACK | poisoned update blocked (fail-closed, n=25); poison rejection guaranteed by coverage calibration (poisoned_rate 0.000) |
 
 Honest null: episode-boundary LoRA updates change behavior (drift 0.08→4.0,
-verified) but do not transfer to future-task success at this scale; the
-mechanistic explanation (sparse positive signal, exploration gap) is in
-TECH_REPORT.md. Artifacts: protocols/ttrl_seed0_v3.json and friends.
+verified) but do not transfer to future-task success at this scale (6
+configs × seeds, 0 flips); the mechanistic explanation (sparse positive
+signal, exploration gap, exact-state evaluator) is in TECH_REPORT.md and the
+decision log. The safety mechanism IS demonstrated: the global gate fail-closes
+against every real and poisoned candidate. Artifacts: protocols/*.json
+(checksums in protocols/SHA256SUMS).
 
 ## Limitations
 
