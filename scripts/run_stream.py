@@ -168,8 +168,11 @@ def run_ttrl(sp: ServedPolicy, env, update_tasks, eval_tasks, out_path: Path,
         return r, ep
 
     # ---- UPDATE PHASE (episode-boundary test-time updates) ----
+    # Greedy rollouts: transformers temp-0.7 sampling drifts away from the
+    # tool-call mode (verified 2026-08-29) -> 0-call episodes -> the answer
+    # penalty self-reinforces a no-tool policy. Greedy keeps the mode.
     for i, task in enumerate(update_tasks):
-        r, ep = roll(policy_model, task, temperature=0.7, seed=0)
+        r, ep = roll(policy_model, task, temperature=0.0, seed=0)
         instr = task.user_scenario.instructions
         task_prompt = instr.task_instructions
         if instr.known_info:
