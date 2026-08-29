@@ -87,6 +87,35 @@ Mandatory pre-read: `C:\Users\w1828\repos\agent-ttrl\phase01\EXPERIMENT_DECISION
   carries episode credit (targets early stopping directly; verified locally).
 - **Compute spent**: ~1 GPUh (baselines + probes).
 
+## D9b — Gate protection demo + success-replay + v4 (2026-08-30, user-mandated upgrades)
+
+- **Gate protection demo** (user-mandated key upgrade): trained a POISONED
+  adapter (flipped credit — reinforce early-stop on failures, 25 episodes).
+  Shadow-evaluation vs frozen: e-process **ROLLBACK** (n=25, mean_gain 0.000,
+  lcb_gain −0.40) — deployment blocked (fail-closed). Poison rejection is
+  additionally guaranteed by the frozen coverage-simulator calibration
+  (poisoned_rate 0.000). Honest limitation recorded: the DB-state evaluator
+  makes non-mutating behavioral changes outcome-invisible, so the poisoned
+  deployment counterfactual = 0.109 = frozen 0.109 (no observable delta on
+  this task set). Artifacts: protocols/gate_demo.json, gate_demo_v2.json.
+- **v4 (positive-focus)**: success episodes get 8 steps (vs 4), stop penalty
+  softened −0.5→−0.3. Eval: 0.109 = 0.109, 0 flips; behavior-diff only 9/46
+  (the positive-focus credit reduces behavioral damage as intended) — still no
+  transfer.
+- **Success-replay (v5)**: train ONLY on the model's own successful update-set
+  trajectories (6 tasks, 13 positive rows, 3 passes, lr 1e-5; eval-set tasks
+  excluded — contamination freeze). Eval: 0.109 = 0.109, 0 flips,
+  behavior-diff 2/46 (13 rows barely move a 4B model — consistent with
+  agent-ttrl D12's "4-step updates negligible drift").
+- **Synthesis (6 configs × seeds, all null)**: at this scale (4B model, ~10%
+  base success, exact-state evaluator), episode-boundary LoRA updates change
+  behavior (verified) but cannot produce future-task gains. The systematic
+  early-stop cannot be unlearned from such sparse positive examples
+  (exploration gap), and the exact-state evaluator caps any partial
+  improvement. The project's contribution stands as the two-scale safety-gated
+  framework + verified mechanism + honest multi-config null with mechanistic
+  explanation + gate-protection demonstration.
+
 ## D8b — Seed-1 replication + closeout (2026-08-29)
 
 - **Seed 1 (identical v3 config, different stream shuffle)**: frozen 0.109 =

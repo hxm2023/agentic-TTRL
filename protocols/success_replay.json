@@ -1,0 +1,30 @@
+{
+ "mode": "success_replay",
+ "seed": 0,
+ "replay_tasks": [
+  "10",
+  "105",
+  "24",
+  "57",
+  "62",
+  "67"
+ ],
+ "n_rows": 13,
+ "passes": 3,
+ "steps": 8,
+ "lr": 1e-05,
+ "eval": {
+  "frozen_rate": 0.10869565217391304,
+  "candidate_rate": 0.10869565217391304,
+  "delta": 0.0,
+  "flips": [],
+  "behavior_diff": 2,
+  "n": 46
+ },
+ "gate": {
+  "decision": "ROLLBACK",
+  "n": 46,
+  "lcb_gain": -0.2445252068080296
+ },
+ "elapsed_s": 2519.5
+}

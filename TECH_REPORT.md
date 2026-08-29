@@ -37,15 +37,18 @@ hidden DB-state evaluation).
 - Update: advantage-weighted policy gradient (GRPO-style) with KL-to-frozen-base
   on tool-call token spans; adaptive lr guard on measured behavior drift.
 
-## Results (sealed eval sets, 2 seeds — exploratory, single-config)
+## Results (sealed 46-task eval sets — exploratory, 6 configs × seeds)
 
 | Arm | Seed 0 | Seed 1 | Evidence |
 |-----|--------|--------|----------|
-| Frozen (temp 0.7, vLLM) | 5/46 = 0.109 | 5/46 = 0.109 | baseline |
-| Best-of-4 (temp 0.7) | 0.109 | — | failures deterministic (any-sample rate equal) |
+| Frozen (temp 0.7, vLLM) | 0.109 | 0.109 | baseline |
+| Best-of-4 (temp 0.7) | 0.109 | — | deterministic failures (any-sample rate equal) |
+| Best-of-4 (temp 1.2) | 0.109 | — | high-temperature sampling changes nothing |
 | Prompt probe (explicit continuation) | 0.109 | — | even a perfect instruction does not help |
-| TTRL candidate (greedy, lr 5e-6, 4 steps/ep, failure-aware credit) | 5/46 = 0.109 | 5/46 = 0.109 | main contrast, 2 seeds |
-| TTRL + global gate (fail-closed at n≈20) | ROLLBACK | ROLLBACK | e-process lcb_gain −0.48 < ε_gain=0.01 |
+| TTRL v3 (failure-aware credit, lr 5e-6) | 0.109 | 0.109 | behavior changed (25/44 of 46 tasks) — 0 flips |
+| TTRL v4 (positive-focus, success steps 8) | 0.109 | — | less behavioral damage (9/46) — 0 flips |
+| Success-replay (positive-only, 13 rows × 3 passes) | 0.109 | — | barely any change (2/46) — 0 flips |
+| TTRL + global gate | ROLLBACK | ROLLBACK | e-process fail-closed in every run |
 
 Diagnostics (the mechanism demonstrably worked — updates applied and changed
 behavior):
