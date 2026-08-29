@@ -124,16 +124,18 @@ def run_ttrl(sp: ServedPolicy, env, update_tasks, eval_tasks, out_path: Path,
              args, stream_meta: dict) -> None:
     """D7-8 main: episode-boundary updates on the first 60%, sealed eval on 40%.
 
-    Update phase: rollout with the CURRENT adapter (episode 1 = frozen base),
-    evidence-gated group credit, accumulate a LoRA adapter, hot-swap it into
-    vLLM. Eval phase: frozen (base) vs candidate (adapter) on the sealed set.
-    Global gate: paired shadow re-rollouts on a subset of update-phase tasks,
-    empirical-Bernstein e-process decision (reported honestly at its n).
+    Rollouts run in transformers (NOT vLLM): vLLM 0.26's LoRA serving is a
+    no-op for the Qwen3.5 hybrid model (verified 2026-08-29), so the trainer
+    process rolls out with the CURRENT adapter directly (single GPU0 process).
+    Eval phase: frozen (ref base) vs candidate (policy_model) on the sealed
+    set. Global gate: paired shadow re-rollouts on a subset of update-phase
+    tasks, empirical-Bernstein e-process decision (honest at its n).
     """
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
-    from ttrl2.gates.global_gate import GateDecision, decide
+    from ttrl2.agent.transformers_loop import rollout_transformers
+    from ttrl2.gates.global_gate import decide
     from ttrl2.gates.local_gate import DriftMonitor
 
     tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR, trust_remote_code=True)
@@ -153,18 +155,21 @@ def run_ttrl(sp: ServedPolicy, env, update_tasks, eval_tasks, out_path: Path,
                for t in tools]
     baselines = GroupBaselines()
     monitor = DriftMonitor()
-    adapter_dir = "/root/autodl-tmp/adapters/ttrl_candidate"
-    adapter_name = "ttrl_candidate"
     update_log = []
     t0 = time.time()
     lr = float(args.lr)
 
+    def roll(model, task, temperature, seed):
+        ep = Tau2Episode(task)
+        r = rollout_transformers(model, tokenizer, ep,
+                                 policy_doc, tools, max_turns=20,
+                                 max_tokens=384, temperature=temperature,
+                                 seed=seed)
+        return r, ep
+
     # ---- UPDATE PHASE (episode-boundary test-time updates) ----
     for i, task in enumerate(update_tasks):
-        ep = Tau2Episode(task)
-        adapter = adapter_name if i > 0 else None
-        r = sp.rollout_episode(ep, policy_doc, tools, adapter=adapter,
-                               temperature=0.7, seed=0)
+        r, ep = roll(policy_model, task, temperature=0.7, seed=0)
         instr = task.user_scenario.instructions
         task_prompt = instr.task_instructions
         if instr.known_info:
@@ -185,8 +190,6 @@ def run_ttrl(sp: ServedPolicy, env, update_tasks, eval_tasks, out_path: Path,
         if rows and not halt:
             stats = grpo_update(policy_model, ref_model, tokenizer, rows, schemas,
                                 lr=lr, kl_beta=args.kl_beta, steps=args.steps)
-            policy_model.save_pretrained(adapter_dir)
-            sp.load_adapter(adapter_name, adapter_dir, inplace=True)
         # drift check on this task's probe; adaptive guard: if behavior drifts
         # too far from base, halve the learning rate (collapse protection)
         probe = tokenizer.apply_chat_template(
@@ -210,12 +213,8 @@ def run_ttrl(sp: ServedPolicy, env, update_tasks, eval_tasks, out_path: Path,
     eval_frozen = []
     eval_cand = []
     for i, task in enumerate(eval_tasks):
-        epf = Tau2Episode(task)
-        rf = sp.rollout_episode(epf, policy_doc, tools, adapter=None,
-                                temperature=0.0, seed=0)
-        epc = Tau2Episode(task)
-        rc = sp.rollout_episode(epc, policy_doc, tools, adapter=adapter_name,
-                                temperature=0.0, seed=0)
+        rf, _ = roll(ref_model, task, temperature=0.0, seed=0)
+        rc, _ = roll(policy_model, task, temperature=0.0, seed=0)
         eval_frozen.append({"task_id": task.id, "success": rf.success,
                             "turns": rf.turns, "calls": rf.n_tool_calls})
         eval_cand.append({"task_id": task.id, "success": rc.success,
@@ -228,12 +227,8 @@ def run_ttrl(sp: ServedPolicy, env, update_tasks, eval_tasks, out_path: Path,
     shadow_tasks = rng.sample(update_tasks, min(20, len(update_tasks)))
     gain_diffs, harm_diffs = [], []
     for task in shadow_tasks:
-        epf = Tau2Episode(task)
-        rf = sp.rollout_episode(epf, policy_doc, tools, adapter=None,
-                                temperature=0.0, seed=1)
-        epc = Tau2Episode(task)
-        rc = sp.rollout_episode(epc, policy_doc, tools, adapter=adapter_name,
-                                temperature=0.0, seed=1)
+        rf, _ = roll(ref_model, task, temperature=0.0, seed=1)
+        rc, _ = roll(policy_model, task, temperature=0.0, seed=1)
         gain_diffs.append((1.0 if rc.success else 0.0) - (1.0 if rf.success else 0.0))
         harm_diffs.append((1.0 if rf.success else 0.0) - (1.0 if rc.success else 0.0))
     gate = decide(1, gain_diffs, harm_diffs)
