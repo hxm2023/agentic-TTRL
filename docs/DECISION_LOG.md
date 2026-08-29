@@ -87,6 +87,16 @@ Mandatory pre-read: `C:\Users\w1828\repos\agent-ttrl\phase01\EXPERIMENT_DECISION
   carries episode credit (targets early stopping directly; verified locally).
 - **Compute spent**: ~1 GPUh (baselines + probes).
 
+## D7 — First ttrl run: aggressive settings collapse (2026-08-29)
+
+- **Observation**: steps 8 × lr 3e-5 with 24+ rows/episode accumulates too fast —
+  probe logit drift 1.3 → 12.3 → 31.5 by episode 13 (policy collapse, no
+  recovery). Run killed at episode 13/68 (~0.3 GPUh). Recorded as a calibration
+  finding: per-episode advantage-weighted updates need lr ≤ 1e-5 or the KL
+  anchor can't hold.
+- **Fix**: default steps 4, lr 1e-5 + adaptive guard (drift > 2.0 → halve lr,
+  floor 1e-6). Relaunched seed 0 with these settings; second seed to follow.
+
 ## D2-4 — Framework built + single-task smoke PASSED (2026-08-29)
 
 - **Built**: src/ttrl2/{gates, env, agent, trainer, serving} — two-scale gates

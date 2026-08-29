@@ -157,6 +157,7 @@ def run_ttrl(sp: ServedPolicy, env, update_tasks, eval_tasks, out_path: Path,
     adapter_name = "ttrl_candidate"
     update_log = []
     t0 = time.time()
+    lr = float(args.lr)
 
     # ---- UPDATE PHASE (episode-boundary test-time updates) ----
     for i, task in enumerate(update_tasks):
@@ -183,16 +184,20 @@ def run_ttrl(sp: ServedPolicy, env, update_tasks, eval_tasks, out_path: Path,
         stats = {"rows": 0, "tokens": 0, "loss": 0.0}
         if rows and not halt:
             stats = grpo_update(policy_model, ref_model, tokenizer, rows, schemas,
-                                lr=args.lr, kl_beta=args.kl_beta, steps=args.steps)
+                                lr=lr, kl_beta=args.kl_beta, steps=args.steps)
             policy_model.save_pretrained(adapter_dir)
             sp.load_adapter(adapter_name, adapter_dir, inplace=True)
-        # drift check on this task's probe
+        # drift check on this task's probe; adaptive guard: if behavior drifts
+        # too far from base, halve the learning rate (collapse protection)
         probe = tokenizer.apply_chat_template(
             [{"role": "system",
               "content": f"You are a retail customer service agent.\n\nPolicy:\n{policy_doc}"},
              {"role": "user", "content": task_prompt}],
             tools=schemas, tokenize=False, add_generation_prompt=True)
         drift = logit_drift(policy_model, ref_model, tokenizer, probe)
+        if drift > 2.0:
+            lr = max(lr / 2.0, 1e-6)
+            print(f"  [guard] drift {drift:.2f} > 2.0 -> lr {lr:.1e}", flush=True)
         update_log.append({"task_id": task.id, "success": r.success,
                            "turns": r.turns, "calls": r.n_tool_calls,
                            "conflicts": conflicts, "halt": halt,
