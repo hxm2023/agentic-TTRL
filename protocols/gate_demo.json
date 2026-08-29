@@ -1,0 +1,24 @@
+{
+ "demo": "gate_protection",
+ "seed": 0,
+ "poison_episodes": 25,
+ "gate": {
+  "decision": "ROLLBACK",
+  "lcb_gain": -0.48115797565846813,
+  "ucb_harm": 0.48115797565846813,
+  "n_shadow": 20,
+  "mean_gain": 0.0,
+  "mean_harm": 0.0,
+  "reason_codes": [
+   "GAIN_NOT_ESTABLISHED",
+   "HARM_NOT_BOUNDED"
+  ]
+ },
+ "deployment": {
+  "frozen_rate": 0.0,
+  "poisoned_rate": 0.0,
+  "delta": 0.0,
+  "n_eval": 20
+ },
+ "elapsed_s": 2598.3
+}

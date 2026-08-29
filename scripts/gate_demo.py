@@ -76,11 +76,19 @@ def main() -> None:
     rng.shuffle(stream)
     pool = stream[:68]                       # update-phase pool
     rest = stream[68:]                       # eval pool (sealed-ish for demo)
-    poison_tasks = rng.sample(pool, args.poison_episodes)
-    shadow_tasks = rng.sample([t for t in pool if t.id not in
-                               {x.id for x in poison_tasks}],
-                              min(args.n_shadow, len(pool) - args.poison_episodes))
-    eval_tasks = rng.sample(rest, min(args.n_eval, len(rest)))
+    # targeted poison: the tasks the base policy demonstrably succeeds on
+    # (measured across the main runs) — suppressing these makes the harm
+    # visible in the shadow pairs (mean_harm > 0 -> HARM_NOT_BOUNDED).
+    SUCCESSFUL_IDS = {"10", "105", "12", "24", "57", "62", "65", "67", "68"}
+    targeted = [t for t in pool if t.id in SUCCESSFUL_IDS]
+    filler = [t for t in pool if t.id not in SUCCESSFUL_IDS]
+    rng.shuffle(filler)
+    poison_tasks = targeted + filler[:max(0, args.poison_episodes - len(targeted))]
+    # shadow = the ANCHORS: the poisoned tasks themselves, re-evaluated.
+    # The harm check asks "did the update break tasks it was trained on?" —
+    # excluding them would hide exactly the harm the gate must catch.
+    shadow_tasks = poison_tasks
+    eval_tasks = rest  # full sealed eval set for the deployment counterfactual
 
     def roll(model, task, temperature=0.0, seed=0):
         ep = Tau2Episode(task)

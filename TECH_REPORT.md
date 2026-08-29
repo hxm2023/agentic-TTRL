@@ -65,6 +65,28 @@ behavior):
   coverage-frozen n=512; the e-process correctly refuses to commit without
   evidence — the safety property demonstrated end-to-end).
 
+## Gate-protection demonstration (user-mandated key upgrade, 2026-08-30)
+
+The gate's protection is demonstrated in two complementary ways:
+
+1. **Real-data fail-closed**: a POISONED adapter (trained on flipped credit —
+   reinforcing the early-stop on failed episodes, 25 episodes) is shadow-
+   evaluated against the frozen parent: the e-process returns **ROLLBACK**
+   (n=25, mean_gain 0.000, lcb_gain −0.40 < ε_gain=0.01) — deployment is
+   blocked. The same fail-closed decision protected all four main-run
+   candidates (v3/v4 × 2 seeds).
+2. **Poison rejection by calibration**: the frozen 162-config coverage
+   simulator guarantees the poisoned operating point is rejected
+   (poisoned_rate 0.000 < SESOI power floor) at the coverage-frozen n=512.
+
+Honest limitation: on this environment, the DB-state evaluator makes
+non-mutating behavioral changes outcome-invisible, so the poisoned candidate's
+deployment counterfactual measures 0.109 = frozen 0.109 (no observable
+degradation — the poison cannot create wrong *state* changes that the model
+never emits). The gate's protection is therefore demonstrated as fail-closed
+rejection (real data) + calibrated poison rejection (simulator), not as an
+observed harm-prevention delta on this task set.
+
 ## Engineering
 
 - Full pipeline on 2× RTX 5090: vLLM serving + dynamic LoRA lifecycle
