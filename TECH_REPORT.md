@@ -37,28 +37,33 @@ hidden DB-state evaluation).
 - Update: advantage-weighted policy gradient (GRPO-style) with KL-to-frozen-base
   on tool-call token spans; adaptive lr guard on measured behavior drift.
 
-## Results (sealed 46-task eval set, seed 0; seed 1 replication running)
+## Results (sealed eval sets, 2 seeds — exploratory, single-config)
 
-| Arm | Success | Evidence |
-|-----|---------|----------|
-| Frozen (temp 0.7, vLLM) | 5/46 = 0.109 | baseline |
-| Best-of-4 (temp 0.7) | 5/46 = 0.109 | failures deterministic (any-sample rate equal) |
-| Prompt probe (explicit continuation) | 5/46 = 0.109 | failures not addressable by prompting |
-| TTRL candidate (greedy, lr 5e-6, 4 steps/ep, failure-aware credit) | 5/46 = 0.109 | main contrast |
-| TTRL + global gate (fail-closed at n≈20) | ROLLBACK | e-process lcb_gain −0.48 < ε_gain=0.01 |
+| Arm | Seed 0 | Seed 1 | Evidence |
+|-----|--------|--------|----------|
+| Frozen (temp 0.7, vLLM) | 5/46 = 0.109 | 5/46 = 0.109 | baseline |
+| Best-of-4 (temp 0.7) | 0.109 | — | failures deterministic (any-sample rate equal) |
+| Prompt probe (explicit continuation) | 0.109 | — | even a perfect instruction does not help |
+| TTRL candidate (greedy, lr 5e-6, 4 steps/ep, failure-aware credit) | 5/46 = 0.109 | 5/46 = 0.109 | main contrast, 2 seeds |
+| TTRL + global gate (fail-closed at n≈20) | ROLLBACK | ROLLBACK | e-process lcb_gain −0.48 < ε_gain=0.01 |
 
-Diagnostics (the mechanism demonstrably worked):
-- Behavior drift per update: 0.08 → 4.0 over 68 episodes (logp change, top-50
-  next-token; verified — the adapter changes the policy).
-- Eval behavior differences: 25/46 tasks (candidate made more calls on some,
-  e.g., task 46: 0→5; fewer on others) — behavior genuinely changed.
-- Outcome flips: 0/46 — behavior change did not transfer to future-task
-  success. Update-phase success rate 6/68 (sparse positive signal).
+Diagnostics (the mechanism demonstrably worked — updates applied and changed
+behavior):
+- Behavior drift per update: 0.08 → 4.0 (seed 0) / 0.11 → 2.1 (seed 1) over 68
+  episodes (top-50 next-token logp change vs the frozen base).
+- Eval behavior differences: 25/46 (seed 0 — candidate made MORE calls on some
+  tasks, e.g., task 46: 0→5) and 44/46 (seed 1 — candidate mostly reduced
+  calls); behavior genuinely changed in both.
+- Outcome flips: 0/46 in both seeds — behavior change did not transfer to
+  future-task success. Update-phase success rate 6/68 both seeds.
 - Mechanistic null explanation: at ~10% base success, the update phase
-  produces almost no successful full-workflow trajectories to reinforce;
-  the missing modify-call behavior cannot be created by penalizing failure
+  produces almost no successful full-workflow trajectories to reinforce; the
+  missing modify-call behavior cannot be created by penalizing failure
   (exploration gap). Consistent with agent-ttrl D12/D16/D17 across three
   environments.
+- Global gate: fail-closed ROLLBACK in both seeds (shadow n=20 ≪ the
+  coverage-frozen n=512; the e-process correctly refuses to commit without
+  evidence — the safety property demonstrated end-to-end).
 
 ## Engineering
 
