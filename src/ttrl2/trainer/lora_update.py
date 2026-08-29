@@ -228,7 +228,9 @@ def build_training_rows(transcript, receipts, outcome: bool, baselines: GroupBas
     # was the dominant failure mode).
     if last_entry is not None and not (last_entry.tool_calls or []):
         msg = {"role": "assistant", "content": last_entry.content}
-        adv = 0.5 if outcome else -0.5
+        adv = 0.5 if outcome else -0.3  # soft stop penalty (v4): too hard a
+        # penalty (v3's -0.5) pushed the model out of answering AND out of
+        # tool calling on unseen tasks; -0.3 keeps the direction, less damage
         rows.append({"messages": messages + [msg], "advantage": adv,
                      "tool_names": []})
         baselines.update(GROUP_STOP, 1.0 if outcome else 0.0)

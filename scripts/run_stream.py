@@ -196,8 +196,11 @@ def run_ttrl(sp: ServedPolicy, env, update_tasks, eval_tasks, out_path: Path,
                                    policy_doc, task_prompt, schemas)
         stats = {"rows": 0, "tokens": 0, "loss": 0.0}
         if rows and not halt:
+            # successful episodes get more steps: the sparse positive signal
+            # is the update's only teacher (exploration-gap fix, v4)
+            ep_steps = args.success_steps if (r.success or False) else args.steps
             stats = grpo_update(policy_model, ref_model, tokenizer, rows, schemas,
-                                lr=lr, kl_beta=args.kl_beta, steps=args.steps)
+                                lr=lr, kl_beta=args.kl_beta, steps=ep_steps)
             # CRITICAL: grpo_update leaves the model in train() (dropout active);
             # generations after that are corrupted (empty outputs). Restore eval.
             policy_model.eval()
@@ -284,6 +287,8 @@ def main() -> None:
     ap.add_argument("--steps", type=int, default=8)
     ap.add_argument("--lr", type=float, default=3e-5)
     ap.add_argument("--kl-beta", type=float, default=0.1)
+    ap.add_argument("--success-steps", type=int, default=8,
+                    help="steps on episodes that succeeded (focus the positive signal)")
     args = ap.parse_args()
 
     stream = load_stream(args.seed)
