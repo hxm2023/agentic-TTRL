@@ -87,6 +87,23 @@ Mandatory pre-read: `C:\Users\w1828\repos\agent-ttrl\phase01\EXPERIMENT_DECISION
   carries episode credit (targets early stopping directly; verified locally).
 - **Compute spent**: ~1 GPUh (baselines + probes).
 
+## D8b — Seed-1 replication + closeout (2026-08-29)
+
+- **Seed 1 (identical v3 config, different stream shuffle)**: frozen 0.109 =
+  candidate 0.109; 0 outcome flips; gate ROLLBACK; behavior changed on 44/46
+  eval tasks (candidate reduced calls — partial collapse, milder than v2);
+  update-phase successes 6/68; drift 0.11→2.05 (max 5.25). **The null
+  replicates across seeds.**
+- **Final result (pre-registered endpoint, 2 exploratory seeds)**: episode-
+  boundary LoRA updates change behavior (drift + eval behavior diffs in both
+  seeds) but do NOT improve future-task success (0/46 flips both); the global
+  e-process gate correctly fail-closes (ROLLBACK, n=20, mean_gain 0.0).
+  Mechanistic explanation: sparse positive signal (6/68) + exploration gap.
+- **Deliverables**: v0.1 tag (framework + env + baselines + main contrast +
+  TECH_REPORT + reproduce.sh + SHA256SUMS), RESUME_BULLETS.md, decision log.
+  GitHub push pending network recovery (github.com unreachable 2026-08-29
+  evening; commit + tag safe locally).
+
 ## D7-8 — Main run results (2026-08-29, seed 0 = v3 config)
 
 - **v3 run (sound mechanism)**: failure-aware credit (success +0.5 all; failure:
