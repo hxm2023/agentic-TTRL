@@ -1,0 +1,20 @@
+{
+ "task_id": "0",
+ "frozen": {
+  "success": false,
+  "turns": 2,
+  "calls": 2
+ },
+ "candidate": {
+  "success": false,
+  "turns": 2,
+  "calls": 2
+ },
+ "update_stats": {
+  "loss": -0.762982400209772,
+  "rows": 32,
+  "tokens": 1568
+ },
+ "conflicts": {},
+ "logit_drift": 8.791413307189941
+}

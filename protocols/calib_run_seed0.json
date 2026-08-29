@@ -1,0 +1,299 @@
+{
+ "profile": "frozen Qwen3.5-4B, tau2 retail, tool-only protocol, temp 0.7",
+ "endpoint": "http://localhost:8001/v1",
+ "model": "qwen3.5-4b",
+ "n_tasks": 24,
+ "n_success": 4,
+ "success_rate": 0.16666666666666666,
+ "elapsed_s": 106.7,
+ "per_task": [
+  {
+   "task_id": "108",
+   "success": false,
+   "turns": 5,
+   "n_tool_calls": 5,
+   "n_receipt_errors": 0,
+   "state": {
+    "orders": 1000,
+    "users": 500,
+    "products": 50
+   }
+  },
+  {
+   "task_id": "49",
+   "success": false,
+   "turns": 2,
+   "n_tool_calls": 2,
+   "n_receipt_errors": 0,
+   "state": {
+    "orders": 1000,
+    "users": 500,
+    "products": 50
+   }
+  },
+  {
+   "task_id": "97",
+   "success": false,
+   "turns": 2,
+   "n_tool_calls": 2,
+   "n_receipt_errors": 0,
+   "state": {
+    "orders": 1000,
+    "users": 500,
+    "products": 50
+   }
+  },
+  {
+   "task_id": "53",
+   "success": false,
+   "turns": 2,
+   "n_tool_calls": 2,
+   "n_receipt_errors": 0,
+   "state": {
+    "orders": 1000,
+    "users": 500,
+    "products": 50
+   }
+  },
+  {
+   "task_id": "5",
+   "success": false,
+   "turns": 0,
+   "n_tool_calls": 0,
+   "n_receipt_errors": 0,
+   "state": {
+    "orders": 1000,
+    "users": 500,
+    "products": 50
+   }
+  },
+  {
+   "task_id": "33",
+   "success": false,
+   "turns": 2,
+   "n_tool_calls": 2,
+   "n_receipt_errors": 0,
+   "state": {
+    "orders": 1000,
+    "users": 500,
+    "products": 50
+   }
+  },
+  {
+   "task_id": "65",
+   "success": true,
+   "turns": 2,
+   "n_tool_calls": 2,
+   "n_receipt_errors": 0,
+   "state": {
+    "orders": 1000,
+    "users": 500,
+    "products": 50
+   }
+  },
+  {
+   "task_id": "62",
+   "success": true,
+   "turns": 2,
+   "n_tool_calls": 2,
+   "n_receipt_errors": 0,
+   "state": {
+    "orders": 1000,
+    "users": 500,
+    "products": 50
+   }
+  },
+  {
+   "task_id": "51",
+   "success": false,
+   "turns": 2,
+   "n_tool_calls": 2,
+   "n_receipt_errors": 0,
+   "state": {
+    "orders": 1000,
+    "users": 500,
+    "products": 50
+   }
+  },
+  {
+   "task_id": "100",
+   "success": false,
+   "turns": 2,
+   "n_tool_calls": 2,
+   "n_receipt_errors": 0,
+   "state": {
+    "orders": 1000,
+    "users": 500,
+    "products": 50
+   }
+  },
+  {
+   "task_id": "38",
+   "success": false,
+   "turns": 3,
+   "n_tool_calls": 3,
+   "n_receipt_errors": 1,
+   "state": {
+    "orders": 1000,
+    "users": 500,
+    "products": 50
+   }
+  },
+  {
+   "task_id": "61",
+   "success": false,
+   "turns": 2,
+   "n_tool_calls": 2,
+   "n_receipt_errors": 0,
+   "state": {
+    "orders": 1000,
+    "users": 500,
+    "products": 50
+   }
+  },
+  {
+   "task_id": "45",
+   "success": false,
+   "turns": 1,
+   "n_tool_calls": 1,
+   "n_receipt_errors": 1,
+   "state": {
+    "orders": 1000,
+    "users": 500,
+    "products": 50
+   }
+  },
+  {
+   "task_id": "74",
+   "success": false,
+   "turns": 2,
+   "n_tool_calls": 2,
+   "n_receipt_errors": 0,
+   "state": {
+    "orders": 1000,
+    "users": 500,
+    "products": 50
+   }
+  },
+  {
+   "task_id": "27",
+   "success": false,
+   "turns": 2,
+   "n_tool_calls": 2,
+   "n_receipt_errors": 0,
+   "state": {
+    "orders": 1000,
+    "users": 500,
+    "products": 50
+   }
+  },
+  {
+   "task_id": "64",
+   "success": false,
+   "turns": 2,
+   "n_tool_calls": 2,
+   "n_receipt_errors": 0,
+   "state": {
+    "orders": 1000,
+    "users": 500,
+    "products": 50
+   }
+  },
+  {
+   "task_id": "17",
+   "success": false,
+   "turns": 2,
+   "n_tool_calls": 2,
+   "n_receipt_errors": 0,
+   "state": {
+    "orders": 1000,
+    "users": 500,
+    "products": 50
+   }
+  },
+  {
+   "task_id": "36",
+   "success": false,
+   "turns": 3,
+   "n_tool_calls": 3,
+   "n_receipt_errors": 1,
+   "state": {
+    "orders": 1000,
+    "users": 500,
+    "products": 50
+   }
+  },
+  {
+   "task_id": "111",
+   "success": false,
+   "turns": 2,
+   "n_tool_calls": 2,
+   "n_receipt_errors": 0,
+   "state": {
+    "orders": 1000,
+    "users": 500,
+    "products": 50
+   }
+  },
+  {
+   "task_id": "12",
+   "success": true,
+   "turns": 1,
+   "n_tool_calls": 1,
+   "n_receipt_errors": 0,
+   "state": {
+    "orders": 1000,
+    "users": 500,
+    "products": 50
+   }
+  },
+  {
+   "task_id": "79",
+   "success": false,
+   "turns": 3,
+   "n_tool_calls": 3,
+   "n_receipt_errors": 1,
+   "state": {
+    "orders": 1000,
+    "users": 500,
+    "products": 50
+   }
+  },
+  {
+   "task_id": "32",
+   "success": false,
+   "turns": 2,
+   "n_tool_calls": 2,
+   "n_receipt_errors": 0,
+   "state": {
+    "orders": 1000,
+    "users": 500,
+    "products": 50
+   }
+  },
+  {
+   "task_id": "68",
+   "success": true,
+   "turns": 0,
+   "n_tool_calls": 0,
+   "n_receipt_errors": 0,
+   "state": {
+    "orders": 1000,
+    "users": 500,
+    "products": 50
+   }
+  },
+  {
+   "task_id": "90",
+   "success": false,
+   "turns": 2,
+   "n_tool_calls": 2,
+   "n_receipt_errors": 0,
+   "state": {
+    "orders": 1000,
+    "users": 500,
+    "products": 50
+   }
+  }
+ ]
+}

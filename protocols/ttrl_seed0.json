@@ -1,0 +1,1406 @@
+{
+ "mode": "ttrl",
+ "meta": {
+  "seed": 0,
+  "n_update": 68,
+  "n_eval": 46
+ },
+ "update_phase": [
+  {
+   "task_id": "9",
+   "success": false,
+   "turns": 2,
+   "calls": 2,
+   "conflicts": {},
+   "halt": false,
+   "rows": 12,
+   "tokens": 524,
+   "loss": -0.018134227619157173,
+   "drift": 0.10411388427019119
+  },
+  {
+   "task_id": "86",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -0.00012190341294626705,
+   "drift": 0.10117307305335999
+  },
+  {
+   "task_id": "82",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -0.5502336275967536,
+   "drift": 0.14115066826343536
+  },
+  {
+   "task_id": "100",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -3.7731996178627014,
+   "drift": 0.12491884082555771
+  },
+  {
+   "task_id": "36",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -6.50798237323761,
+   "drift": 0.1374961882829666
+  },
+  {
+   "task_id": "48",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -8.113612413406372,
+   "drift": 0.09999576210975647
+  },
+  {
+   "task_id": "61",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -8.813440799713135,
+   "drift": 0.1331159919500351
+  },
+  {
+   "task_id": "16",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -10.857339143753052,
+   "drift": 0.1736201047897339
+  },
+  {
+   "task_id": "23",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -12.562580108642578,
+   "drift": 0.13751983642578125
+  },
+  {
+   "task_id": "19",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -12.552952766418457,
+   "drift": 0.1911996454000473
+  },
+  {
+   "task_id": "92",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -12.350077867507935,
+   "drift": 0.15506485104560852
+  },
+  {
+   "task_id": "79",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -11.815090894699097,
+   "drift": 0.2603446841239929
+  },
+  {
+   "task_id": "17",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -10.99020528793335,
+   "drift": 0.20253846049308777
+  },
+  {
+   "task_id": "62",
+   "success": true,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": 54.16627597808838,
+   "drift": 0.13750635087490082
+  },
+  {
+   "task_id": "5",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -10.08309555053711,
+   "drift": 0.18624168634414673
+  },
+  {
+   "task_id": "112",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -14.305482149124146,
+   "drift": 0.19483554363250732
+  },
+  {
+   "task_id": "49",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -14.41913890838623,
+   "drift": 0.23249930143356323
+  },
+  {
+   "task_id": "22",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -13.622515201568604,
+   "drift": 0.2064322978258133
+  },
+  {
+   "task_id": "10",
+   "success": true,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": 61.141724586486816,
+   "drift": 0.19131499528884888
+  },
+  {
+   "task_id": "45",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -12.371248245239258,
+   "drift": 0.1711753010749817
+  },
+  {
+   "task_id": "105",
+   "success": true,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": 49.58786582946777,
+   "drift": 0.24718986451625824
+  },
+  {
+   "task_id": "3",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -14.529398441314697,
+   "drift": 0.2448200136423111
+  },
+  {
+   "task_id": "85",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -19.132915496826172,
+   "drift": 0.20127440989017487
+  },
+  {
+   "task_id": "59",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -20.341655254364014,
+   "drift": 0.23369525372982025
+  },
+  {
+   "task_id": "77",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -19.43626594543457,
+   "drift": 0.23128639161586761
+  },
+  {
+   "task_id": "35",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -18.306519985198975,
+   "drift": 0.20344345271587372
+  },
+  {
+   "task_id": "71",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -17.08540678024292,
+   "drift": 0.23499268293380737
+  },
+  {
+   "task_id": "43",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -15.850108861923218,
+   "drift": 0.2527664303779602
+  },
+  {
+   "task_id": "75",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -14.691017866134644,
+   "drift": 0.2775000035762787
+  },
+  {
+   "task_id": "90",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -13.601428985595703,
+   "drift": 0.34247609972953796
+  },
+  {
+   "task_id": "107",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -12.472997903823853,
+   "drift": 0.24376189708709717
+  },
+  {
+   "task_id": "18",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -11.460500717163086,
+   "drift": 0.3002017140388489
+  },
+  {
+   "task_id": "39",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -10.543845415115356,
+   "drift": 0.31884703040122986
+  },
+  {
+   "task_id": "98",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -9.675897121429443,
+   "drift": 0.29390594363212585
+  },
+  {
+   "task_id": "67",
+   "success": true,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": 93.51776123046875,
+   "drift": 0.24687372148036957
+  },
+  {
+   "task_id": "11",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -13.263878107070923,
+   "drift": 0.2989022135734558
+  },
+  {
+   "task_id": "41",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -16.996259927749634,
+   "drift": 0.2515258491039276
+  },
+  {
+   "task_id": "15",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -16.37330198287964,
+   "drift": 0.3374626040458679
+  },
+  {
+   "task_id": "33",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -15.038316249847412,
+   "drift": 0.3261944651603699
+  },
+  {
+   "task_id": "70",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -13.629131078720093,
+   "drift": 0.328967422246933
+  },
+  {
+   "task_id": "76",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -12.467004776000977,
+   "drift": 0.4017919898033142
+  },
+  {
+   "task_id": "28",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -11.269588470458984,
+   "drift": 0.34121015667915344
+  },
+  {
+   "task_id": "13",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -10.199305772781372,
+   "drift": 0.3849934935569763
+  },
+  {
+   "task_id": "103",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -9.261432886123657,
+   "drift": 0.40573227405548096
+  },
+  {
+   "task_id": "93",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -8.367225170135498,
+   "drift": 0.3749629259109497
+  },
+  {
+   "task_id": "8",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -7.587987899780273,
+   "drift": 0.43327757716178894
+  },
+  {
+   "task_id": "64",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -6.863141059875488,
+   "drift": 0.40173202753067017
+  },
+  {
+   "task_id": "4",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -6.195743083953857,
+   "drift": 0.3649999797344208
+  },
+  {
+   "task_id": "95",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -5.574858903884888,
+   "drift": 0.38124996423721313
+  },
+  {
+   "task_id": "21",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -5.043302774429321,
+   "drift": 0.47903722524642944
+  },
+  {
+   "task_id": "27",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -4.557005405426025,
+   "drift": 0.4680976867675781
+  },
+  {
+   "task_id": "96",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -4.107987642288208,
+   "drift": 0.4004290699958801
+  },
+  {
+   "task_id": "73",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -3.7049217224121094,
+   "drift": 0.6118276715278625
+  },
+  {
+   "task_id": "57",
+   "success": true,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": 119.24012565612793,
+   "drift": 0.4447900950908661
+  },
+  {
+   "task_id": "111",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -13.449784278869629,
+   "drift": 0.4590844511985779
+  },
+  {
+   "task_id": "110",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -14.5360848903656,
+   "drift": 0.40640953183174133
+  },
+  {
+   "task_id": "83",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -13.354833841323853,
+   "drift": 0.5151304602622986
+  },
+  {
+   "task_id": "7",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -12.055562019348145,
+   "drift": 0.5677305459976196
+  },
+  {
+   "task_id": "101",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -10.875075340270996,
+   "drift": 0.4697911739349365
+  },
+  {
+   "task_id": "80",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -9.816898107528687,
+   "drift": 0.509721577167511
+  },
+  {
+   "task_id": "69",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -8.843331336975098,
+   "drift": 0.4809795618057251
+  },
+  {
+   "task_id": "14",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -7.973618507385254,
+   "drift": 0.5608993172645569
+  },
+  {
+   "task_id": "38",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -7.181191086769104,
+   "drift": 0.5710957050323486
+  },
+  {
+   "task_id": "24",
+   "success": true,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": 122.02592468261719,
+   "drift": 0.5129199624061584
+  },
+  {
+   "task_id": "72",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -16.540992259979248,
+   "drift": 0.5737068057060242
+  },
+  {
+   "task_id": "53",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -17.245689392089844,
+   "drift": 0.5795076489448547
+  },
+  {
+   "task_id": "0",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -15.773848056793213,
+   "drift": 0.5920494794845581
+  },
+  {
+   "task_id": "91",
+   "success": false,
+   "turns": 0,
+   "calls": 0,
+   "conflicts": {},
+   "halt": false,
+   "rows": 4,
+   "tokens": 8,
+   "loss": -14.212709903717041,
+   "drift": 0.5518651008605957
+  }
+ ],
+ "eval": {
+  "frozen": [
+   {
+    "task_id": "108",
+    "success": false,
+    "turns": 1,
+    "calls": 1
+   },
+   {
+    "task_id": "1",
+    "success": false,
+    "turns": 1,
+    "calls": 1
+   },
+   {
+    "task_id": "65",
+    "success": true,
+    "turns": 1,
+    "calls": 1
+   },
+   {
+    "task_id": "104",
+    "success": false,
+    "turns": 2,
+    "calls": 2
+   },
+   {
+    "task_id": "99",
+    "success": false,
+    "turns": 1,
+    "calls": 1
+   },
+   {
+    "task_id": "56",
+    "success": false,
+    "turns": 1,
+    "calls": 1
+   },
+   {
+    "task_id": "47",
+    "success": false,
+    "turns": 5,
+    "calls": 5
+   },
+   {
+    "task_id": "89",
+    "success": false,
+    "turns": 1,
+    "calls": 1
+   },
+   {
+    "task_id": "6",
+    "success": false,
+    "turns": 2,
+    "calls": 2
+   },
+   {
+    "task_id": "2",
+    "success": false,
+    "turns": 1,
+    "calls": 1
+   },
+   {
+    "task_id": "32",
+    "success": false,
+    "turns": 1,
+    "calls": 1
+   },
+   {
+    "task_id": "46",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "88",
+    "success": false,
+    "turns": 4,
+    "calls": 4
+   },
+   {
+    "task_id": "74",
+    "success": false,
+    "turns": 1,
+    "calls": 1
+   },
+   {
+    "task_id": "60",
+    "success": false,
+    "turns": 1,
+    "calls": 1
+   },
+   {
+    "task_id": "50",
+    "success": true,
+    "turns": 1,
+    "calls": 1
+   },
+   {
+    "task_id": "34",
+    "success": false,
+    "turns": 1,
+    "calls": 1
+   },
+   {
+    "task_id": "106",
+    "success": false,
+    "turns": 3,
+    "calls": 3
+   },
+   {
+    "task_id": "81",
+    "success": false,
+    "turns": 2,
+    "calls": 2
+   },
+   {
+    "task_id": "31",
+    "success": false,
+    "turns": 1,
+    "calls": 1
+   },
+   {
+    "task_id": "12",
+    "success": true,
+    "turns": 4,
+    "calls": 4
+   },
+   {
+    "task_id": "66",
+    "success": false,
+    "turns": 1,
+    "calls": 1
+   },
+   {
+    "task_id": "78",
+    "success": false,
+    "turns": 2,
+    "calls": 2
+   },
+   {
+    "task_id": "58",
+    "success": false,
+    "turns": 2,
+    "calls": 2
+   },
+   {
+    "task_id": "25",
+    "success": true,
+    "turns": 1,
+    "calls": 1
+   },
+   {
+    "task_id": "68",
+    "success": true,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "109",
+    "success": false,
+    "turns": 4,
+    "calls": 4
+   },
+   {
+    "task_id": "97",
+    "success": false,
+    "turns": 1,
+    "calls": 1
+   },
+   {
+    "task_id": "29",
+    "success": false,
+    "turns": 1,
+    "calls": 1
+   },
+   {
+    "task_id": "113",
+    "success": false,
+    "turns": 1,
+    "calls": 1
+   },
+   {
+    "task_id": "54",
+    "success": false,
+    "turns": 3,
+    "calls": 3
+   },
+   {
+    "task_id": "20",
+    "success": false,
+    "turns": 1,
+    "calls": 1
+   },
+   {
+    "task_id": "63",
+    "success": false,
+    "turns": 1,
+    "calls": 1
+   },
+   {
+    "task_id": "37",
+    "success": false,
+    "turns": 2,
+    "calls": 2
+   },
+   {
+    "task_id": "51",
+    "success": false,
+    "turns": 1,
+    "calls": 1
+   },
+   {
+    "task_id": "30",
+    "success": false,
+    "turns": 1,
+    "calls": 1
+   },
+   {
+    "task_id": "87",
+    "success": false,
+    "turns": 2,
+    "calls": 2
+   },
+   {
+    "task_id": "42",
+    "success": false,
+    "turns": 1,
+    "calls": 1
+   },
+   {
+    "task_id": "52",
+    "success": false,
+    "turns": 1,
+    "calls": 1
+   },
+   {
+    "task_id": "55",
+    "success": false,
+    "turns": 3,
+    "calls": 3
+   },
+   {
+    "task_id": "26",
+    "success": false,
+    "turns": 1,
+    "calls": 1
+   },
+   {
+    "task_id": "102",
+    "success": false,
+    "turns": 1,
+    "calls": 1
+   },
+   {
+    "task_id": "44",
+    "success": false,
+    "turns": 1,
+    "calls": 1
+   },
+   {
+    "task_id": "84",
+    "success": false,
+    "turns": 1,
+    "calls": 1
+   },
+   {
+    "task_id": "40",
+    "success": false,
+    "turns": 3,
+    "calls": 3
+   },
+   {
+    "task_id": "94",
+    "success": false,
+    "turns": 1,
+    "calls": 1
+   }
+  ],
+  "candidate": [
+   {
+    "task_id": "108",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "1",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "65",
+    "success": true,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "104",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "99",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "56",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "47",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "89",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "6",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "2",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "32",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "46",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "88",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "74",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "60",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "50",
+    "success": true,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "34",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "106",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "81",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "31",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "12",
+    "success": true,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "66",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "78",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "58",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "25",
+    "success": true,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "68",
+    "success": true,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "109",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "97",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "29",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "113",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "54",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "20",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "63",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "37",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "51",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "30",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "87",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "42",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "52",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "55",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "26",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "102",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "44",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "84",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "40",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   },
+   {
+    "task_id": "94",
+    "success": false,
+    "turns": 0,
+    "calls": 0
+   }
+  ],
+  "frozen_rate": 0.10869565217391304,
+  "candidate_rate": 0.10869565217391304
+ },
+ "gate": {
+  "decision": "ROLLBACK",
+  "lcb_gain": -0.48115797565846813,
+  "ucb_harm": 0.48115797565846813,
+  "n_shadow": 20,
+  "reason_codes": [
+   "GAIN_NOT_ESTABLISHED",
+   "HARM_NOT_BOUNDED"
+  ],
+  "mean_gain": 0.0,
+  "mean_harm": 0.0
+ },
+ "elapsed_s": 5505.0,
+ "config": {
+  "steps": 4,
+  "lr": 1e-05,
+  "kl_beta": 0.1,
+  "n_update": 68,
+  "n_eval": 46
+ }
+}

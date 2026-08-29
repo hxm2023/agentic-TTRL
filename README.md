@@ -57,11 +57,16 @@ GPU0 (trainer): episode-boundary updates
 
 | Arm | Eval success (46 sealed tasks) | Notes |
 |-----|-------------------------------|-------|
-| Frozen | 0.109 | systematic early stopping before state changes |
+| Frozen | 0.109 (5/46) | systematic early stopping before state changes |
 | Best-of-4 | 0.109 | deterministic failures; sampling does not help |
-| Prompt probe | 0.109 | perfect instruction does not help |
-| TTRL candidate | _ | see protocols/ttrl_seed*.json |
-| TTRL + global gate | _ | fail-closed at small shadow n (honest) |
+| Prompt probe | 0.109 | even a perfect instruction does not help |
+| TTRL candidate (seed 0) | 0.109 (5/46) | behavior changed (25/46 tasks differ) but 0 outcome flips |
+| TTRL + global gate | ROLLBACK | fail-closed at shadow n=20 (e-process lcb_gain −0.48 < 0.01) |
+
+Honest null: episode-boundary LoRA updates change behavior (drift 0.08→4.0,
+verified) but do not transfer to future-task success at this scale; the
+mechanistic explanation (sparse positive signal, exploration gap) is in
+TECH_REPORT.md. Artifacts: protocols/ttrl_seed0_v3.json and friends.
 
 ## Limitations
 

@@ -37,19 +37,28 @@ hidden DB-state evaluation).
 - Update: advantage-weighted policy gradient (GRPO-style) with KL-to-frozen-base
   on tool-call token spans; adaptive lr guard on measured behavior drift.
 
-## Results (sealed 46-task eval set, seed 0)
+## Results (sealed 46-task eval set, seed 0; seed 1 replication running)
 
 | Arm | Success | Evidence |
 |-----|---------|----------|
-| Frozen (temp 0.7) | 5/46 = 0.109 | baseline |
+| Frozen (temp 0.7, vLLM) | 5/46 = 0.109 | baseline |
 | Best-of-4 (temp 0.7) | 5/46 = 0.109 | failures deterministic (any-sample rate equal) |
 | Prompt probe (explicit continuation) | 5/46 = 0.109 | failures not addressable by prompting |
-| TTRL candidate (4 steps/ep, lr 1e-5 + guard) | *pending* | main contrast |
-| TTRL + global gate (fail-closed at n≈20) | *pending* | gate decision + e-process trajectory |
+| TTRL candidate (greedy, lr 5e-6, 4 steps/ep, failure-aware credit) | 5/46 = 0.109 | main contrast |
+| TTRL + global gate (fail-closed at n≈20) | ROLLBACK | e-process lcb_gain −0.48 < ε_gain=0.01 |
 
-Diagnostics: per-episode logit drift trajectory (behavior change verified,
-collapse prevented by the guard), modify-call rate over the update phase,
-credit-outcome correlation.
+Diagnostics (the mechanism demonstrably worked):
+- Behavior drift per update: 0.08 → 4.0 over 68 episodes (logp change, top-50
+  next-token; verified — the adapter changes the policy).
+- Eval behavior differences: 25/46 tasks (candidate made more calls on some,
+  e.g., task 46: 0→5; fewer on others) — behavior genuinely changed.
+- Outcome flips: 0/46 — behavior change did not transfer to future-task
+  success. Update-phase success rate 6/68 (sparse positive signal).
+- Mechanistic null explanation: at ~10% base success, the update phase
+  produces almost no successful full-workflow trajectories to reinforce;
+  the missing modify-call behavior cannot be created by penalizing failure
+  (exploration gap). Consistent with agent-ttrl D12/D16/D17 across three
+  environments.
 
 ## Engineering
 
