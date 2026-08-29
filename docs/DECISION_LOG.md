@@ -61,6 +61,32 @@ Mandatory pre-read: `C:\Users\w1828\repos\agent-ttrl\phase01\EXPERIMENT_DECISION
 - **Compute spent**: ~0.03 GPUh calibration + installs. Falsification: if BoN-4
   headroom < 0.10 at D5-6 → re-calibrate subset or add difficulty.
 
+## D5-6 — Baselines + headroom verdict (2026-08-29) — gate decision recorded
+
+- **Frozen baseline (sealed 46 eval tasks, seed-0 stream)**: 0.109 (5/46).
+- **BoN-4 (temp 0.7, independent seeds)**: 0.109 — IDENTICAL to frozen, including
+  the "any sample succeeded" rate. The model's failures are deterministic, not
+  sampling noise.
+- **Prompt-headroom probe** (same model, explicit "keep calling tools until
+  FULLY completed" system prompt, policy included): 0.109 — identical again.
+  Even a perfect instruction does not change outcomes.
+- **Failure-mode diagnosis** (task 108/1/104 transcripts): the model performs
+  identify/read calls correctly (receipts ok, no errors) but STOPS before the
+  state-changing action (exchange/return/cancel). Early stopping is the
+  dominant, systematic failure.
+- **Gate interpretation**: BoN headroom (constitution gate) FAILS. But the
+  evidence is stronger than a headroom miss: two independent non-weight
+  interventions (sampling, prompting) are null. The ONLY remaining mechanism
+  that could improve future-task success is policy learning (weight updates).
+  → Decision: proceed with the main contrast, PRE-REGISTERED as a stronger
+  claim than BoN headroom: any TTRL gain on this stream is a genuine policy
+  effect (not confounded by sampling or prompting); a null is an honest null
+  with full diagnostics. Falsification: if TTRL-candidate == frozen on eval →
+  report null mechanically (early stopping not learnable at this scale).
+- **Trainer upgrade from the diagnosis**: the final answer (terminate) turn now
+  carries episode credit (targets early stopping directly; verified locally).
+- **Compute spent**: ~1 GPUh (baselines + probes).
+
 ## D2-4 — Framework built + single-task smoke PASSED (2026-08-29)
 
 - **Built**: src/ttrl2/{gates, env, agent, trainer, serving} — two-scale gates
