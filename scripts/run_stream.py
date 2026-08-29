@@ -159,12 +159,17 @@ def run_ttrl(sp: ServedPolicy, env, update_tasks, eval_tasks, out_path: Path,
     t0 = time.time()
     lr = float(args.lr)
 
-    def roll(model, task, temperature, seed):
+    def roll(model, task, temperature, seed, verbose: bool = False):
         ep = Tau2Episode(task)
         r = rollout_transformers(model, tokenizer, ep,
                                  policy_doc, tools, max_turns=20,
                                  max_tokens=384, temperature=temperature,
                                  seed=seed)
+        if verbose and r.transcript:
+            e0 = r.transcript[0]
+            print(f"    [diag] training={model.training} "
+                  f"first={repr((e0.content or '')[:60])} "
+                  f"calls={r.n_tool_calls}", flush=True)
         return r, ep
 
     # ---- UPDATE PHASE (episode-boundary test-time updates) ----
@@ -193,6 +198,9 @@ def run_ttrl(sp: ServedPolicy, env, update_tasks, eval_tasks, out_path: Path,
         if rows and not halt:
             stats = grpo_update(policy_model, ref_model, tokenizer, rows, schemas,
                                 lr=lr, kl_beta=args.kl_beta, steps=args.steps)
+            # CRITICAL: grpo_update leaves the model in train() (dropout active);
+            # generations after that are corrupted (empty outputs). Restore eval.
+            policy_model.eval()
         # drift check on this task's probe; adaptive guard: if behavior drifts
         # too far from base, halve the learning rate (collapse protection)
         probe = tokenizer.apply_chat_template(

@@ -79,27 +79,31 @@ class GroupBaselines:
 
 def assign_group_credit(receipts, outcome: bool, baselines: GroupBaselines,
                         conflicts: dict[str, list[str]]) -> list[CreditRow]:
-    """Per-group credit from episode outcome; local gate zeroes conflicted groups."""
+    """Failure-aware per-group credit; local gate zeroes conflicted groups.
+
+    Success: +0.5 for every group that acted (reinforce the full pattern).
+    Failure: identify/read are CORRECT prerequisites — neutral (0); modify
+    attempts that did not lead to success are penalized (-0.3); the early
+    stop is penalized via the terminate turn (-0.5). This avoids the
+    perverse uniform-negative signal that killed tool calling (verified
+    2026-08-29: uniform -0.5 on failed episodes -> drift-13 collapse).
+    """
     rows: list[CreditRow] = []
-    acted = {GROUP_IDENTIFY: False, GROUP_READ: False, GROUP_MODIFY: False, GROUP_OTHER: False}
     for i, r in enumerate(receipts):
         g = TOOL_GROUPS.get(r.tool_name, GROUP_OTHER)
-        acted[g] = True
-    reward = 1.0 if outcome else 0.0
-    for i, r in enumerate(receipts):
-        g = TOOL_GROUPS.get(r.tool_name, GROUP_OTHER)
-        b = baselines.get(g)
-        raw = reward - b
         gate_conflicts = conflicts.get(g, [])
         if gate_conflicts:
-            rows.append(CreditRow(i, g, 0.0, raw, False,
+            rows.append(CreditRow(i, g, 0.0, 0.0, False,
                                   f"EVIDENCE_CONFLICT:{';'.join(gate_conflicts)}"))
-        elif not r.ok:
-            rows.append(CreditRow(i, g, min(raw, -0.1), raw, True, "CALL_FAILED"))
+            continue
+        if outcome:
+            raw = 0.5
+        elif g == GROUP_MODIFY:
+            raw = -0.3 if r.ok else -0.1
         else:
-            rows.append(CreditRow(i, g, raw, raw, True, "OK"))
-        if acted[g]:
-            baselines.update(g, reward)
+            raw = 0.0
+        rows.append(CreditRow(i, g, raw, raw, True,
+                              "OK" if r.ok else "CALL_FAILED"))
     return rows
 
 
@@ -224,8 +228,7 @@ def build_training_rows(transcript, receipts, outcome: bool, baselines: GroupBas
     # was the dominant failure mode).
     if last_entry is not None and not (last_entry.tool_calls or []):
         msg = {"role": "assistant", "content": last_entry.content}
-        b_stop = baselines.get(GROUP_STOP)
-        adv = (1.0 if outcome else 0.0) - b_stop
+        adv = 0.5 if outcome else -0.5
         rows.append({"messages": messages + [msg], "advantage": adv,
                      "tool_names": []})
         baselines.update(GROUP_STOP, 1.0 if outcome else 0.0)
