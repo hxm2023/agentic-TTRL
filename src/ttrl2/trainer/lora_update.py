@@ -30,6 +30,7 @@ GROUP_IDENTIFY = "identify"
 GROUP_READ = "read"
 GROUP_MODIFY = "modify"
 GROUP_OTHER = "other"
+GROUP_STOP = "stop"  # final answer turn (terminate action); gets episode credit
 
 # Tool -> group mapping for tau2 retail (frozen D1).
 TOOL_GROUPS = {
@@ -169,6 +170,7 @@ def build_training_rows(transcript, receipts, outcome: bool, baselines: GroupBas
         {"role": "user", "content": task_instr},
     ]
     pending: dict | None = None  # assistant turn being accumulated
+    last_entry: dict | None = None
 
     def flush() -> None:
         nonlocal pending
@@ -177,19 +179,20 @@ def build_training_rows(transcript, receipts, outcome: bool, baselines: GroupBas
         calls = pending["calls"]
         msg = {"role": "assistant", "content": pending["content"],
                "tool_calls": [c for c in calls]}
-        row_advs = []
-        idx = pending["start_idx"]
-        for c in calls:
-            g = TOOL_GROUPS.get(c["function"]["name"], GROUP_OTHER)
-            cred = credits.get(idx)
-            row_advs.append(cred.credit if cred else 0.0)
-            idx += 1
-        adv = sum(row_advs) / len(row_advs) if row_advs else 0.0
-        rows.append({
-            "messages": messages + [msg],
-            "advantage": adv,
-            "tool_names": [c["function"]["name"] for c in calls],
-        })
+        if calls:
+            row_advs = []
+            idx = pending["start_idx"]
+            for c in calls:
+                g = TOOL_GROUPS.get(c["function"]["name"], GROUP_OTHER)
+                cred = credits.get(idx)
+                row_advs.append(cred.credit if cred else 0.0)
+                idx += 1
+            adv = sum(row_advs) / len(row_advs) if row_advs else 0.0
+            rows.append({
+                "messages": messages + [msg],
+                "advantage": adv,
+                "tool_names": [c["function"]["name"] for c in calls],
+            })
         messages.append(msg)
         pending = None
 
@@ -198,6 +201,7 @@ def build_training_rows(transcript, receipts, outcome: bool, baselines: GroupBas
         if entry.role == "assistant":
             flush()
             pending = {"content": entry.content, "calls": [], "start_idx": start_idx}
+            last_entry = entry
             for tc in (entry.tool_calls or []):
                 try:
                     args = json.loads(tc["arguments"])
@@ -214,16 +218,35 @@ def build_training_rows(transcript, receipts, outcome: bool, baselines: GroupBas
             messages.append({"role": "tool", "tool_call_id": entry.tool_call_id,
                              "content": content})
     flush()
+    # the final answer turn (no tool calls) is the TERMINATE action: give it
+    # the episode credit so "stop early on failure" is penalized and
+    # "stop after completion" is reinforced (agent-ttrl D12: early stopping
+    # was the dominant failure mode).
+    if last_entry is not None and not (last_entry.tool_calls or []):
+        msg = {"role": "assistant", "content": last_entry.content}
+        b_stop = baselines.get(GROUP_STOP)
+        adv = (1.0 if outcome else 0.0) - b_stop
+        rows.append({"messages": messages + [msg], "advantage": adv,
+                     "tool_names": []})
+        baselines.update(GROUP_STOP, 1.0 if outcome else 0.0)
     return [r for r in rows if r["advantage"] != 0.0]
 
 
 def _tool_call_span(rendered: str) -> tuple[int, int] | None:
-    """Byte span of the LAST <tool_call> block (the current turn's action)."""
+    """Byte span of the current turn's action in the rendered prompt.
+
+    Prefers the LAST <tool_call> block; falls back to the last assistant turn
+    (used for the terminate/answer turn, which carries episode credit).
+    """
     start = rendered.rfind("<tool_call>")
-    end = rendered.rfind("</tool_call>")
-    if start < 0 or end < 0 or end < start:
-        return None
-    return start, end + len("</tool_call>")
+    if start >= 0:
+        end = rendered.rfind("</tool_call>")
+        if end > start:
+            return start, end + len("</tool_call>")
+    a_start = rendered.rfind("<|im_start|>assistant")
+    if a_start >= 0:
+        return a_start, len(rendered)
+    return None
 
 
 def _chunked_logp(logits: "torch.Tensor", target: "torch.Tensor",

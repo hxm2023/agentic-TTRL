@@ -61,24 +61,30 @@ def rollout(
     max_tokens: int = 256,
     temperature: float = 0.7,
     seed: int | None = None,
+    system_override: str | None = None,
+    user_prompt_override: str | None = None,
 ) -> RolloutResult:
     """Run one episode: prompt -> tool calls -> receipts -> repeat.
 
     `episode` must expose `step(tool_name, arguments) -> receipt` and
-    `evaluate() -> bool`.
+    `evaluate() -> bool`. `system_override` / `user_prompt_override` are for
+    diagnostic probes only (never used in the main protocol).
     """
     schemas = build_tool_schemas(tools)
     task = episode.task
     instr = task.user_scenario.instructions
-    user_prompt = instr.task_instructions
-    if instr.known_info:
-        user_prompt += f"\n\nKnown information: {instr.known_info}"
-    if instr.unknown_info:
-        user_prompt += f"\n\nUnknown information: {instr.unknown_info}"
+    if user_prompt_override is not None:
+        user_prompt = user_prompt_override
+    else:
+        user_prompt = instr.task_instructions
+        if instr.known_info:
+            user_prompt += f"\n\nKnown information: {instr.known_info}"
+        if instr.unknown_info:
+            user_prompt += f"\n\nUnknown information: {instr.unknown_info}"
 
     messages: list[dict] = [
         {"role": "system",
-         "content": f"You are a retail customer service agent.\n\nPolicy:\n{policy}"},
+         "content": system_override or f"You are a retail customer service agent.\n\nPolicy:\n{policy}"},
         {"role": "user", "content": user_prompt},
     ]
     result = RolloutResult(success=None, turns=0, n_tool_calls=0)
