@@ -45,8 +45,13 @@ def rollout_transformers(
     max_tokens: int = 256,
     temperature: float = 0.7,
     seed: int | None = None,
+    system_override: str | None = None,
 ) -> RolloutResult:
-    """Rollout with a transformers/peft model (adapter already active)."""
+    """Rollout with a transformers/peft model (adapter already active).
+
+    `system_override` replaces the default system prompt (few-shot probe /
+    diagnostic use only).
+    """
     schemas = build_tool_schemas(tools)
     task = episode.task
     instr = task.user_scenario.instructions
@@ -58,7 +63,8 @@ def rollout_transformers(
 
     messages: list[dict] = [
         {"role": "system",
-         "content": f"You are a retail customer service agent.\n\nPolicy:\n{policy}"},
+         "content": system_override or
+                    f"You are a retail customer service agent.\n\nPolicy:\n{policy}"},
         {"role": "user", "content": user_prompt},
     ]
     result = RolloutResult(success=None, turns=0, n_tool_calls=0)

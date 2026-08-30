@@ -159,12 +159,27 @@ def run_ttrl(sp: ServedPolicy, env, update_tasks, eval_tasks, out_path: Path,
     t0 = time.time()
     lr = float(args.lr)
 
+    sys_prompt = None
+    if args.fewshot:
+        # one worked exchange workflow from task 0's reference (few-shot;
+        # does not leak eval-task targets)
+        t0ref = next(t for t in get_tasks("base") if t.id == "0")
+        ex_lines = ["Here is an example of completing a similar request:"]
+        for a in (t0ref.evaluation_criteria.actions or []):
+            argstr = ", ".join(f"{k}={v}" for k, v in a.arguments.items())
+            ex_lines.append(f"  apis.{a.name}({argstr})")
+        sys_prompt = (f"You are a retail customer service agent.\n\n"
+                      f"Policy:\n{policy_doc}\n\n" + "\n".join(ex_lines) + "\n\n"
+                      "IMPORTANT: follow the example's pattern — use the tools "
+                      "to complete the request fully, including any exchange, "
+                      "return, cancel or modification.")
+
     def roll(model, task, temperature, seed, verbose: bool = False):
         ep = Tau2Episode(task)
         r = rollout_transformers(model, tokenizer, ep,
                                  policy_doc, tools, max_turns=20,
                                  max_tokens=384, temperature=temperature,
-                                 seed=seed)
+                                 seed=seed, system_override=sys_prompt)
         if verbose and r.transcript:
             e0 = r.transcript[0]
             print(f"    [diag] training={model.training} "
@@ -289,6 +304,9 @@ def main() -> None:
     ap.add_argument("--kl-beta", type=float, default=0.1)
     ap.add_argument("--success-steps", type=int, default=8,
                     help="steps on episodes that succeeded (focus the positive signal)")
+    ap.add_argument("--fewshot", action="store_true",
+                    help="v6: append a worked exchange workflow (task-0 reference, "
+                         "few-shot) to the system prompt for rollouts and eval")
     args = ap.parse_args()
 
     stream = load_stream(args.seed)
