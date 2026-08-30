@@ -1,0 +1,292 @@
+{
+ "mode": "fewshot_probe",
+ "seed": 0,
+ "success_rate": 0.1,
+ "n_success": 4,
+ "n": 40,
+ "modify_calls_total": 38,
+ "tasks_with_modify": 21,
+ "per_task": [
+  {
+   "task_id": "9",
+   "success": false,
+   "turns": 3,
+   "calls": 3,
+   "modify_calls": 0
+  },
+  {
+   "task_id": "86",
+   "success": false,
+   "turns": 11,
+   "calls": 11,
+   "modify_calls": 3
+  },
+  {
+   "task_id": "82",
+   "success": false,
+   "turns": 5,
+   "calls": 5,
+   "modify_calls": 1
+  },
+  {
+   "task_id": "100",
+   "success": false,
+   "turns": 5,
+   "calls": 5,
+   "modify_calls": 1
+  },
+  {
+   "task_id": "36",
+   "success": false,
+   "turns": 5,
+   "calls": 5,
+   "modify_calls": 1
+  },
+  {
+   "task_id": "48",
+   "success": false,
+   "turns": 3,
+   "calls": 3,
+   "modify_calls": 0
+  },
+  {
+   "task_id": "61",
+   "success": false,
+   "turns": 4,
+   "calls": 4,
+   "modify_calls": 0
+  },
+  {
+   "task_id": "16",
+   "success": false,
+   "turns": 5,
+   "calls": 5,
+   "modify_calls": 0
+  },
+  {
+   "task_id": "23",
+   "success": false,
+   "turns": 5,
+   "calls": 5,
+   "modify_calls": 1
+  },
+  {
+   "task_id": "19",
+   "success": false,
+   "turns": 5,
+   "calls": 5,
+   "modify_calls": 1
+  },
+  {
+   "task_id": "92",
+   "success": false,
+   "turns": 5,
+   "calls": 5,
+   "modify_calls": 1
+  },
+  {
+   "task_id": "79",
+   "success": false,
+   "turns": 3,
+   "calls": 3,
+   "modify_calls": 0
+  },
+  {
+   "task_id": "17",
+   "success": false,
+   "turns": 3,
+   "calls": 3,
+   "modify_calls": 0
+  },
+  {
+   "task_id": "62",
+   "success": true,
+   "turns": 4,
+   "calls": 4,
+   "modify_calls": 0
+  },
+  {
+   "task_id": "5",
+   "success": false,
+   "turns": 3,
+   "calls": 3,
+   "modify_calls": 0
+  },
+  {
+   "task_id": "112",
+   "success": false,
+   "turns": 5,
+   "calls": 5,
+   "modify_calls": 1
+  },
+  {
+   "task_id": "49",
+   "success": false,
+   "turns": 2,
+   "calls": 2,
+   "modify_calls": 0
+  },
+  {
+   "task_id": "22",
+   "success": false,
+   "turns": 7,
+   "calls": 7,
+   "modify_calls": 2
+  },
+  {
+   "task_id": "10",
+   "success": true,
+   "turns": 6,
+   "calls": 6,
+   "modify_calls": 3
+  },
+  {
+   "task_id": "45",
+   "success": false,
+   "turns": 5,
+   "calls": 5,
+   "modify_calls": 0
+  },
+  {
+   "task_id": "105",
+   "success": true,
+   "turns": 2,
+   "calls": 2,
+   "modify_calls": 0
+  },
+  {
+   "task_id": "3",
+   "success": false,
+   "turns": 5,
+   "calls": 5,
+   "modify_calls": 1
+  },
+  {
+   "task_id": "85",
+   "success": false,
+   "turns": 11,
+   "calls": 11,
+   "modify_calls": 3
+  },
+  {
+   "task_id": "59",
+   "success": false,
+   "turns": 9,
+   "calls": 9,
+   "modify_calls": 2
+  },
+  {
+   "task_id": "77",
+   "success": false,
+   "turns": 20,
+   "calls": 20,
+   "modify_calls": 2
+  },
+  {
+   "task_id": "35",
+   "success": false,
+   "turns": 20,
+   "calls": 20,
+   "modify_calls": 5
+  },
+  {
+   "task_id": "71",
+   "success": false,
+   "turns": 8,
+   "calls": 8,
+   "modify_calls": 1
+  },
+  {
+   "task_id": "43",
+   "success": false,
+   "turns": 2,
+   "calls": 2,
+   "modify_calls": 0
+  },
+  {
+   "task_id": "75",
+   "success": false,
+   "turns": 3,
+   "calls": 3,
+   "modify_calls": 0
+  },
+  {
+   "task_id": "90",
+   "success": false,
+   "turns": 5,
+   "calls": 5,
+   "modify_calls": 1
+  },
+  {
+   "task_id": "107",
+   "success": false,
+   "turns": 3,
+   "calls": 3,
+   "modify_calls": 0
+  },
+  {
+   "task_id": "18",
+   "success": false,
+   "turns": 5,
+   "calls": 5,
+   "modify_calls": 1
+  },
+  {
+   "task_id": "39",
+   "success": false,
+   "turns": 11,
+   "calls": 11,
+   "modify_calls": 5
+  },
+  {
+   "task_id": "98",
+   "success": false,
+   "turns": 7,
+   "calls": 7,
+   "modify_calls": 1
+  },
+  {
+   "task_id": "67",
+   "success": true,
+   "turns": 9,
+   "calls": 9,
+   "modify_calls": 0
+  },
+  {
+   "task_id": "11",
+   "success": false,
+   "turns": 4,
+   "calls": 4,
+   "modify_calls": 1
+  },
+  {
+   "task_id": "41",
+   "success": false,
+   "turns": 4,
+   "calls": 4,
+   "modify_calls": 0
+  },
+  {
+   "task_id": "15",
+   "success": false,
+   "turns": 3,
+   "calls": 3,
+   "modify_calls": 0
+  },
+  {
+   "task_id": "33",
+   "success": false,
+   "turns": 5,
+   "calls": 5,
+   "modify_calls": 0
+  },
+  {
+   "task_id": "70",
+   "success": false,
+   "turns": 3,
+   "calls": 3,
+   "modify_calls": 0
+  }
+ ],
+ "elapsed_s": 122.1
+}

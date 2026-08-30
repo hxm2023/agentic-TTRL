@@ -47,6 +47,8 @@ def main() -> None:
     ap.add_argument("--endpoint", default="http://localhost:8001/v1")
     ap.add_argument("--model", default="qwen3.5-4b")
     ap.add_argument("--n", type=int, default=46)
+    ap.add_argument("--pool", choices=["eval", "update"], default="eval",
+                    help="which stream segment to probe")
     ap.add_argument("--out", default="protocols/fewshot_probe.json")
     args = ap.parse_args()
 
@@ -57,7 +59,10 @@ def main() -> None:
     rng = random.Random(args.seed)
     stream = sorted(tasks, key=lambda t: t.id)
     rng.shuffle(stream)
-    eval_tasks = stream[68:68 + args.n]
+    if args.pool == "eval":
+        pool_tasks = stream[68:68 + args.n]
+    else:
+        pool_tasks = stream[:args.n]
     sp = ServedPolicy(args.endpoint, args.model)
     example = example_trajectory()
 
@@ -69,7 +74,7 @@ def main() -> None:
 
     results = []
     t0 = time.time()
-    for i, task in enumerate(eval_tasks):
+    for i, task in enumerate(pool_tasks):
         ep = Tau2Episode(task)
         instr = task.user_scenario.instructions
         up = instr.task_instructions
@@ -84,7 +89,7 @@ def main() -> None:
         results.append({"task_id": task.id, "success": r.success,
                         "turns": r.turns, "calls": r.n_tool_calls,
                         "modify_calls": n_mod})
-        print(f"[{i+1}/{len(eval_tasks)}] {task.id}: succ={r.success} "
+        print(f"[{i+1}/{len(pool_tasks)}] {task.id}: succ={r.success} "
               f"calls={r.n_tool_calls} modify={n_mod}", flush=True)
 
     rate = sum(1 for x in results if x["success"]) / len(results)

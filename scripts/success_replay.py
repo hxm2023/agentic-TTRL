@@ -44,20 +44,34 @@ def main() -> None:
     ap.add_argument("--passes", type=int, default=3)
     ap.add_argument("--steps", type=int, default=8)
     ap.add_argument("--lr", type=float, default=1e-5)
+    ap.add_argument("--format", default="qwen3_xml",
+                    choices=["qwen3_xml", "llama3_json"])
+    ap.add_argument("--no-kl", action="store_true")
+    ap.add_argument("--fewshot", action="store_true")
+    ap.add_argument("--update-temp", type=float, default=0.0)
+    ap.add_argument("--model-dir", default=MODEL_DIR)
+    ap.add_argument("--ids", default=None,
+                    help="comma-separated task IDs to replay (measured successes)")
     ap.add_argument("--out", default="protocols/success_replay.json")
     args = ap.parse_args()
 
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
-    tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR, trust_remote_code=True)
+    model_dir = args.model_dir
+    tokenizer = AutoTokenizer.from_pretrained(model_dir, trust_remote_code=True)
     base = AutoModelForCausalLM.from_pretrained(
-        MODEL_DIR, torch_dtype=torch.bfloat16, device_map={"": 0},
+        model_dir, torch_dtype=torch.bfloat16, device_map={"": 0},
         trust_remote_code=True).eval()
     policy_model = make_lora_model(base)
-    ref_model = AutoModelForCausalLM.from_pretrained(
-        MODEL_DIR, torch_dtype=torch.bfloat16, device_map={"": 0},
-        trust_remote_code=True).eval()
+    if args.no_kl:
+        ref_model = None
+        probe_ref = policy_model.base_model
+    else:
+        ref_model = AutoModelForCausalLM.from_pretrained(
+            model_dir, torch_dtype=torch.bfloat16, device_map={"": 0},
+            trust_remote_code=True).eval()
+        probe_ref = ref_model
     env = get_environment()
     policy_doc = env.get_policy()
     tools = env.get_tools()
@@ -76,13 +90,32 @@ def main() -> None:
     # success-replay pool: successful tasks in the UPDATE set only
     replay_ids = SUCCESSFUL_IDS & update_ids
     replay_tasks = [t for t in stream if t.id in replay_ids]
-    print(f"replay tasks (update-set successes): {sorted(replay_ids)}", flush=True)
+    if args.ids:
+        ids = {x.strip() for x in args.ids.split(",")}
+        replay_tasks = [t for t in stream if t.id in ids and t.id in update_ids]
+    print(f"replay pool: {len(replay_tasks)} tasks "
+          f"fewshot={args.fewshot} ids={[t.id for t in replay_tasks]}",
+          flush=True)
+
+    sys_prompt = None
+    if args.fewshot:
+        t0ref = next(t for t in tasks if t.id == "0")
+        ex_lines = ["Here is an example of completing a similar request:"]
+        for a in (t0ref.evaluation_criteria.actions or []):
+            argstr = ", ".join(f"{k}={v}" for k, v in a.arguments.items())
+            ex_lines.append(f"  apis.{a.name}({argstr})")
+        sys_prompt = (f"You are a retail customer service agent.\n\n"
+                      f"Policy:\n{policy_doc}\n\n" + "\n".join(ex_lines) + "\n\n"
+                      "IMPORTANT: follow the example's pattern — use the tools "
+                      "to complete the request fully, including any exchange, "
+                      "return, cancel or modification.")
 
     def roll(model, task, temperature=0.0, seed=0):
         ep = Tau2Episode(task)
         r = rollout_transformers(model, tokenizer, ep, policy_doc, tools,
                                  max_turns=20, max_tokens=384,
-                                 temperature=temperature, seed=seed)
+                                 temperature=temperature, seed=seed,
+                                 system_override=sys_prompt, fmt=args.format)
         return r, ep
 
     # ---- 1. gather successful trajectories (frozen base, deterministic) ----
@@ -90,7 +123,7 @@ def main() -> None:
     all_rows = []
     t0 = time.time()
     for task in replay_tasks:
-        r, ep = roll(ref_model, task)
+        r, ep = roll(probe_ref, task, temperature=args.update_temp)
         instr = task.user_scenario.instructions
         tp = instr.task_instructions
         if instr.known_info:
@@ -132,7 +165,7 @@ def main() -> None:
     ef, ec = [], []
     cf_modify = 0
     for i, task in enumerate(eval_tasks):
-        rf, epf = roll(ref_model, task)
+        rf, epf = roll(probe_ref, task)
         rc, epc = roll(policy_model, task)
         cf_modify += sum(1 for t in call_names(epc) if t in MODIFY_TOOLS)
         ef.append({"task_id": task.id, "success": rf.success,
