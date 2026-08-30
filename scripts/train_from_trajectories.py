@@ -119,11 +119,12 @@ def main() -> None:
         # rebuild the receipts
         from ttrl2.env.tau2_env import ToolReceipt
         receipts = [ToolReceipt(d["tool_name"], d["arguments"], d["ok"],
-                                None, d.get("error")) for d in traj["receipts"]]
+                                d.get("output"), d.get("error"))
+                    for d in traj["receipts"]]
         identified = None
         for rc in receipts:
             if rc.tool_name in ("find_user_id_by_name_zip", "find_user_id_by_email") and rc.ok:
-                identified = str(rc.arguments)  # output not saved; use args marker
+                identified = str(rc.output).strip()
         conflicts = detect_conflicts(receipts, identified)
         rows = build_training_rows(transcript, receipts, True, baselines, conflicts,
                                    policy_doc, traj["task_prompt"], schemas)

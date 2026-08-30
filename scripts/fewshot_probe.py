@@ -101,7 +101,9 @@ def main() -> None:
                                 "tool_call_id": e.tool_call_id,
                                 "name": e.name} for e in r.transcript],
                 "receipts": [{"tool_name": rc.tool_name, "arguments": rc.arguments,
-                              "ok": rc.ok, "error": rc.error} for rc in ep.record.receipts],
+                              "ok": rc.ok, "error": rc.error,
+                              "output": str(rc.output) if rc.output is not None else None}
+                             for rc in ep.record.receipts],
             })
         print(f"[{i+1}/{len(pool_tasks)}] {task.id}: succ={r.success} "
               f"calls={r.n_tool_calls} modify={n_mod}", flush=True)
