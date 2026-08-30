@@ -87,6 +87,24 @@ Mandatory pre-read: `C:\Users\w1828\repos\agent-ttrl\phase01\EXPERIMENT_DECISION
   carries episode credit (targets early stopping directly; verified locally).
 - **Compute spent**: ~1 GPUh (baselines + probes).
 
+## D12 — Project closeout (2026-08-31) — provenance notes
+
+- The server (autodl4) was decommissioned. All necessary files are in the
+  repo; recoverable externals: models (HF/ModelScope), tau2-bench (pinned
+  commit, fetch_tau2.sh), the conda env (COMPATIBILITY_PROFILE).
+- **Lost with the server (recorded honestly)**: (1) the final version of
+  `fewshot_probe_llama_update.json` containing the 4 saved successful
+  trajectories (the committed copy predates the trajectory-saving change;
+  the trajectory AUDIT conclusions — no policy-valid identify→modify
+  example, local-gate abstention — are recorded in D11 and TECH_REPORT);
+  (2) the trained Llama LoRA adapter weights (reproducible from the pinned
+  code + saved probe data on a fresh server); (3) run logs.
+- **What stands**: every result artifact (22 JSONs + SHA256SUMS), the
+  deployment eval of the Llama candidate (0.109 = frozen), the figures,
+  17 unit tests, CI, and the full reports. The project's conclusions do not
+  depend on the lost intermediate data.
+- Final state: 41 commits + v0.1 tag on GitHub; project concluded.
+
 ## D11 — Cross-family capability analysis (2026-08-30/31, autodl4) — the null's mechanism is exhaustive
 
 - **Qwen3.5-9B capability probe** (few-shot, 46 sealed tasks): success 0.109
