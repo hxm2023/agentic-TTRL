@@ -37,6 +37,17 @@ hidden DB-state evaluation).
 - Update: advantage-weighted policy gradient (GRPO-style) with KL-to-frozen-base
   on tool-call token spans; adaptive lr guard on measured behavior drift.
 
+## Figures
+
+- `figures/eval_contrast.png` — every arm's sealed-eval success rate (the
+  "wall" at 0.109).
+- `figures/drift_trajectories.png` — per-update logit drift for the main
+  runs (behavior change verified; the guard threshold at 2.0).
+- `figures/failure_taxonomy.png` — failure-mode counts (70% behavioral).
+- `figures/behavior_outcome.png` — behavior-change vs outcome-flip
+  dissociation across runs.
+Regenerate with `python scripts/make_figures.py` (CPU-only).
+
 ## Results (sealed 46-task eval sets — exploratory, 6 configs × seeds)
 
 | Arm | Seed 0 | Seed 1 | Evidence |

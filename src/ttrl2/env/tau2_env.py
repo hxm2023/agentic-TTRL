@@ -14,31 +14,14 @@ hidden DB-state evaluation. No user simulator in the loop.
 """
 from __future__ import annotations
 
-import json
 from copy import deepcopy
-from dataclasses import dataclass, field
 
 from tau2.data_model.tasks import Task
 from tau2.domains.retail.data_model import RetailDB
 from tau2.domains.retail.utils import RETAIL_DB_PATH
 from tau2.domains.retail.tools import RetailTools
 
-
-@dataclass
-class ToolReceipt:
-    tool_name: str
-    arguments: dict
-    ok: bool
-    output: object
-    error: str | None = None
-
-
-@dataclass
-class EpisodeRecord:
-    task_id: str
-    receipts: list[ToolReceipt] = field(default_factory=list)
-    success: bool | None = None
-    turns: int = 0
+from ttrl2.env.receipts import EpisodeRecord, ToolReceipt
 
 
 class Tau2Episode:
