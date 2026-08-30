@@ -29,6 +29,7 @@ hf download Qwen/Qwen3.5-4B --local-dir /data/models/Qwen3.5-4B
 
 ```bash
 bash reproduce.sh          # full pipeline: baselines + main contrast + report
+bash scripts/run_upgrade.sh  # v6: few-shot capability probe -> conditional TTRL
 ```
 
 Key commands:
