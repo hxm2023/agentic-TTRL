@@ -87,6 +87,30 @@ Mandatory pre-read: `C:\Users\w1828\repos\agent-ttrl\phase01\EXPERIMENT_DECISION
   carries episode credit (targets early stopping directly; verified locally).
 - **Compute spent**: ~1 GPUh (baselines + probes).
 
+## D9c — Structural finding + failure taxonomy + data audit (2026-08-30)
+
+- **Strong success-replay** (13 positive rows × 12 passes × 12 steps, lr 3e-5):
+  0.109 = 0.109, 0 flips, candidate modify-calls in eval = 0. The replay log
+  prints every positive trajectory's tool calls: NONE contain a state-changing
+  call (all identify/read-satisfiable or zero-call trivial).
+- **Structural finding (exhaustive null explanation)**: across ~400 measured
+  episodes (all runs), the Qwen3.5-4B model never emits a modify tool call
+  (zero evidence conflicts, zero modify receipts). The TTRL update's positive
+  signal for the missing behavior is STRUCTURALLY unavailable — the
+  exploration gap for state-changing actions is absolute on this model×env
+  pair. This explains every null config and closes the mechanism story.
+- **Failure-mode taxonomy** (frozen, 46 sealed tasks): early_stop 23 (50%),
+  wrong_tool 9 (20%), wrong_args 7 (15%), no_call_answer 2 (4%), success 5
+  (11%). 70% of failures are behavioral — the behaviors TTRL targets — yet
+  unlearnable without positive examples.
+- **Data audit**: the amazon-agi/tau2-bench-verified fork (checked 2026-08-30)
+  has a byte-identical retail DB and a structurally re-formatted criteria
+  format (not drop-in comparable) — official sierra-research data stands as
+  the source (BASELINE_SOURCES.md).
+- **Matched-compute**: at comparable rollout budgets (BoN-4 = 184, TTRL ≈ 200),
+  both fail to move the sealed rate — the null is not a compute artifact.
+- Compute: ~2.5 GPUh (strong replay + taxonomy + demo runs).
+
 ## D9b — Gate protection demo + success-replay + v4 (2026-08-30, user-mandated upgrades)
 
 - **Gate protection demo** (user-mandated key upgrade): trained a POISONED
