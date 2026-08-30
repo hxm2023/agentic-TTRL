@@ -105,8 +105,10 @@ def main() -> None:
         rows = build_training_rows(r.transcript, ep.record.receipts,
                                    r.success or False, baselines, conflicts,
                                    policy_doc, tp, schemas)
+        calls = [e.name for e in r.transcript if e.role == "tool"]
         print(f"[replay {task.id}] succ={r.success} turns={r.turns} "
-              f"calls={r.n_tool_calls} rows={len(rows)}", flush=True)
+              f"calls={r.n_tool_calls} rows={len(rows)} tools={calls}",
+              flush=True)
         if r.success:
             all_rows.extend(rows)
 
@@ -120,16 +122,26 @@ def main() -> None:
             policy_model.eval()
 
     # ---- 3. eval: frozen vs candidate on the sealed set ----
+    def call_names(ep):
+        return [rc.tool_name for rc in ep.record.receipts]
+
+    MODIFY_TOOLS = {"cancel_pending_order", "exchange_delivered_order_items",
+                    "modify_pending_order_address", "modify_pending_order_items",
+                    "modify_pending_order_payment", "modify_user_address",
+                    "return_delivered_order_items"}
     ef, ec = [], []
+    cf_modify = 0
     for i, task in enumerate(eval_tasks):
-        rf, _ = roll(ref_model, task)
-        rc, _ = roll(policy_model, task)
+        rf, epf = roll(ref_model, task)
+        rc, epc = roll(policy_model, task)
+        cf_modify += sum(1 for t in call_names(epc) if t in MODIFY_TOOLS)
         ef.append({"task_id": task.id, "success": rf.success,
                    "turns": rf.turns, "calls": rf.n_tool_calls})
         ec.append({"task_id": task.id, "success": rc.success,
                    "turns": rc.turns, "calls": rc.n_tool_calls})
         print(f"[eval {i+1}/{len(eval_tasks)}] {task.id}: "
               f"frozen={rf.success} candidate={rc.success}", flush=True)
+    print(f"candidate modify-calls in eval: {cf_modify}", flush=True)
     fr = sum(1 for t in ef if t["success"]) / len(ef)
     cr = sum(1 for t in ec if t["success"]) / len(ec)
     flips = [(t["task_id"], t["success"], c["success"])

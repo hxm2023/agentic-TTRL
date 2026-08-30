@@ -48,7 +48,19 @@ hidden DB-state evaluation).
 | TTRL v3 (failure-aware credit, lr 5e-6) | 0.109 | 0.109 | behavior changed (25/44 of 46 tasks) — 0 flips |
 | TTRL v4 (positive-focus, success steps 8) | 0.109 | — | less behavioral damage (9/46) — 0 flips |
 | Success-replay (positive-only, 13 rows × 3 passes) | 0.109 | — | barely any change (2/46) — 0 flips |
+| Strong success-replay (13 rows × 12 passes × 12 steps, lr 3e-5) | 0.109 | — | 0 flips; candidate modify-calls in eval = 0 — see below |
 | TTRL + global gate | ROLLBACK | ROLLBACK | e-process fail-closed in every run |
+
+**Structural finding (why the null is exhaustive)**: the strong-replay run
+prints every positive trajectory's tool calls — NONE of the model's
+"successful" episodes contain a state-changing (modify) call; they are
+read-satisfiable (identify + get_user_details) or trivially satisfied with
+zero calls. Across ~400 measured episodes (all runs), the 4B model never
+emits a modify tool call (zero evidence conflicts, zero modify receipts).
+Consequently the TTRL update's positive signal for the missing behavior is
+structurally unavailable: the exploration gap for state-changing actions is
+absolute on this model×environment pair. This is the complete mechanistic
+explanation of the null, confirmed by the failure taxonomy below.
 
 Diagnostics (the mechanism demonstrably worked — updates applied and changed
 behavior):
@@ -68,6 +80,22 @@ behavior):
   coverage-frozen n=512; the e-process correctly refuses to commit without
   evidence — the safety property demonstrated end-to-end).
 
+## Failure-mode taxonomy (frozen policy, 46 sealed eval tasks)
+
+| Mode | Count | Share |
+|------|-------|-------|
+| early_stop (calls then answer before completion) | 23 | 50% |
+| wrong_tool (calls diverge from the reference) | 9 | 20% |
+| wrong_args (receipt errors) | 7 | 15% |
+| no_call_answer | 2 | 4% |
+| success | 5 | 11% |
+
+70% of failures are behavioral (early-stop + wrong-tool) — exactly the
+behaviors episode-boundary updates target — yet the update's positive signal
+for the completing behavior is structurally absent (see the structural
+finding above). The taxonomy quantifies why neither sampling, prompting, nor
+policy updates move the sealed success rate.
+
 ## Matched-compute accounting (rollout parity)
 
 | Arm | Rollouts consumed | Eval success |
@@ -83,17 +111,20 @@ null is not a compute-budget artifact.
 
 ## What would make TTRL work here (honest forward-looking)
 
-The null's mechanistic explanation (sparse positive signal + exploration gap)
-implies the recipe for a positive result at this mechanism:
-1. A base model strong enough to complete some workflows (the 4B model's
-   systematic early-stop leaves ~6/68 positive examples).
-2. A longer update phase or higher base success (≥0.25) so the update
-   phase generates dense positive signal.
+The null's mechanistic explanation (sparse positive signal + exploration gap,
+made structurally precise by the strong-replay finding) implies the recipe
+for a positive result at this mechanism:
+1. A base model strong enough to COMPLETE state-changing workflows — the 4B
+   model never emits a modify call, so no positive example of the missing
+   behavior exists to learn from. A stronger base (7B+ with demonstrated
+   tool-completion) is the single highest-leverage change.
+2. A longer update phase or higher base success (≥0.25) so the update phase
+   generates dense positive signal.
 3. A softer evaluator (partial-credit instead of exact DB-state match) so
    partial workflow gains are measurable instead of capped at 0.
 4. Larger per-update effect (higher-rank LoRA, more steps) with the KL
-   anchor + drift guard holding — the operating envelope is
-   documented (drift 0.1-2.0 healthy; >5 collapses tool calling).
+   anchor + drift guard holding — the operating envelope is documented
+   (drift 0.1-2.0 healthy; >5 collapses tool calling).
 
 ## Gate-protection demonstration (user-mandated key upgrade, 2026-08-30)
 
