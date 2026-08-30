@@ -73,6 +73,7 @@ def main() -> None:
                   "cancel or modification.")
 
     results = []
+    trajectories = []
     t0 = time.time()
     for i, task in enumerate(pool_tasks):
         ep = Tau2Episode(task)
@@ -89,6 +90,19 @@ def main() -> None:
         results.append({"task_id": task.id, "success": r.success,
                         "turns": r.turns, "calls": r.n_tool_calls,
                         "modify_calls": n_mod})
+        if r.success:
+            # save the successful trajectory (transcript + receipts + task)
+            # for downstream positive-signal training (success replay)
+            trajectories.append({
+                "task_id": task.id,
+                "task_prompt": up,
+                "transcript": [{"role": e.role, "content": e.content,
+                                "tool_calls": e.tool_calls,
+                                "tool_call_id": e.tool_call_id,
+                                "name": e.name} for e in r.transcript],
+                "receipts": [{"tool_name": rc.tool_name, "arguments": rc.arguments,
+                              "ok": rc.ok, "error": rc.error} for rc in ep.record.receipts],
+            })
         print(f"[{i+1}/{len(pool_tasks)}] {task.id}: succ={r.success} "
               f"calls={r.n_tool_calls} modify={n_mod}", flush=True)
 
@@ -99,12 +113,14 @@ def main() -> None:
            "success_rate": rate, "n_success": sum(1 for x in results if x["success"]),
            "n": len(results), "modify_calls_total": n_mod,
            "tasks_with_modify": n_tasks_with_modify,
-           "per_task": results, "elapsed_s": round(time.time() - t0, 1)}
+           "per_task": results, "elapsed_s": round(time.time() - t0, 1),
+           "trajectories": trajectories}
     out_path = Path(args.out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(out, indent=1))
     print(f"few-shot probe: success={rate:.3f} modify_calls={n_mod} "
-          f"tasks_with_modify={n_tasks_with_modify} -> {out_path}")
+          f"tasks_with_modify={n_tasks_with_modify} "
+          f"trajectories_saved={len(trajectories)} -> {out_path}")
 
 
 if __name__ == "__main__":
