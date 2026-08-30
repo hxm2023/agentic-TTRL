@@ -45,6 +45,7 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--endpoint", default="http://localhost:8001/v1")
+    ap.add_argument("--model", default="qwen3.5-4b")
     ap.add_argument("--n", type=int, default=46)
     ap.add_argument("--out", default="protocols/fewshot_probe.json")
     args = ap.parse_args()
@@ -57,7 +58,7 @@ def main() -> None:
     stream = sorted(tasks, key=lambda t: t.id)
     rng.shuffle(stream)
     eval_tasks = stream[68:68 + args.n]
-    sp = ServedPolicy(args.endpoint, "qwen3.5-4b")
+    sp = ServedPolicy(args.endpoint, args.model)
     example = example_trajectory()
 
     sys_prompt = (f"You are a retail customer service agent.\n\n"
