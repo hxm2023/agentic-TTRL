@@ -87,6 +87,24 @@ Mandatory pre-read: `C:\Users\w1828\repos\agent-ttrl\phase01\EXPERIMENT_DECISION
   carries episode credit (targets early stopping directly; verified locally).
 - **Compute spent**: ~1 GPUh (baselines + probes).
 
+## D9d — v6 capability probe (prepared 2026-08-30, awaiting GPU)
+
+- **Question**: is the missing modify behavior a model-capability limit or
+  prompt-addressable? The structural finding (no positive modify examples)
+  predicts the mechanism cannot learn the behavior — but if a worked example
+  elicits it, the TTRL positive signal exists (the rollout policy can emit
+  modify calls -> learnable) and v6 (--fewshot) becomes the positive-result
+  shot.
+- **Prepared**: scripts/fewshot_probe.py (one worked exchange workflow from
+  task 0's reference as few-shot; measures modify-call rate + success on the
+  sealed 46), run_stream.py --fewshot variant (few-shot system prompt for
+  update rollouts + eval), scripts/run_upgrade.sh (probe -> decision ->
+  conditional v6 launch).
+- **Status**: AutoDL gateway unreachable from this machine since 2026-08-30
+  (~09:00 local; GitHub recovered, gateway still down — instance may have
+  stopped or the local route is blocked). Probe launch pending connectivity;
+  all code committed and pushed.
+
 ## D9c — Structural finding + failure taxonomy + data audit (2026-08-30)
 
 - **Strong success-replay** (13 positive rows × 12 passes × 12 steps, lr 3e-5):
