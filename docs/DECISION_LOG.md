@@ -87,6 +87,22 @@ Mandatory pre-read: `C:\Users\w1828\repos\agent-ttrl\phase01\EXPERIMENT_DECISION
   carries episode credit (targets early stopping directly; verified locally).
 - **Compute spent**: ~1 GPUh (baselines + probes).
 
+## D10b — Server release archival (2026-08-30)
+
+- **All 18 run artifacts** (every manifest produced across the project) are in
+  `protocols/` with SHA256SUMS, committed and pushed.
+- **tau2-bench pinned** at `a2c0247` (2026-08-18); `scripts/fetch_tau2.sh`
+  reproduces the exact checkout; the retail DB was verified byte-identical to
+  the amazon-agi verified fork (audit note in BASELINE_SOURCES.md).
+- **Recoverable after release**: Qwen3.5-4B (HF), tau2-bench (GitHub @ pin),
+  conda env (COMPATIBILITY_PROFILE.md pins every version and vLLM flag),
+  all results (repo).
+- **Lost with the server (documented, non-critical)**: the trained LoRA
+  adapter weights (/root/autodl-tmp/adapters/), server run logs, the
+  v6 few-shot probe (never ran — the gateway went down before launch). The
+  adapter is reproducible from the pinned code + profile; the probe is one
+  command away on a fresh instance (`bash scripts/run_upgrade.sh`).
+
 ## D9d — v6 capability probe (prepared 2026-08-30, awaiting GPU)
 
 - **Question**: is the missing modify behavior a model-capability limit or
