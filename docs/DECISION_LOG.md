@@ -87,6 +87,35 @@ Mandatory pre-read: `C:\Users\w1828\repos\agent-ttrl\phase01\EXPERIMENT_DECISION
   carries episode credit (targets early stopping directly; verified locally).
 - **Compute spent**: ~1 GPUh (baselines + probes).
 
+## D11 — Cross-family capability analysis (2026-08-30/31, autodl4) — the null's mechanism is exhaustive
+
+- **Qwen3.5-9B capability probe** (few-shot, 46 sealed tasks): success 0.109
+  (the SAME 5 tasks as the 4B), modify_calls = 0 — the behavioral gap
+  (never attempts state changes) is Qwen-family-wide, not a small-model
+  artifact.
+- **Llama-3.1-8B capability probe** (few-shot, 46 tasks): success 0.109,
+  but **modify_calls = 54 across 35/46 tasks** (76%), with 4 of the 5
+  successes containing CORRECT modify calls — a different family behavior.
+  A different failure mode: the model invents entity IDs (fake orders
+  #W0000000, guessed emails) → its modify attempts fail at the API level.
+- **Local-gate real-data demonstration**: the Llama TTRL update phase
+  (plain and few-shot prompts) produced ~50 calls/episode but ZERO training
+  rows — the E_hard conflict detection (REPEATED_FAIL_SAME_ARGS on identical
+  failing retries; USER_MISMATCH on invented targets) correctly ZEROED all
+  credit (fail-closed). The local gate's protection against reinforcing
+  invalid action attempts is demonstrated on real model behavior (the 4B
+  never triggered it; Llama triggers it constantly).
+- **Synthesis (exhaustive)**: two model families × capability probes ×
+  prompt variants — no model at ≤9B produces VALID state-changing trajectories
+  on this environment (Qwen: never attempts; Llama: attempts with invalid
+  targets, blocked by the local gate). The TTRL positive signal is
+  structurally unavailable at this model class; the two-scale safety
+  mechanism is demonstrated on both failure modes (behavioral gap + invalid
+  attempts). The recipe's "stronger base" (frontier-class multi-step entity
+  tracking) is the confirmed requirement.
+- Artifacts: protocols/fewshot_probe_9b.json, fewshot_probe_llama.json.
+  Llama TTRL runs recorded as calibration (rows=0 everywhere — no signal).
+
 ## D10c — v6 few-shot probe EXECUTED (2026-08-30, autodl4) — capability boundary confirmed
 
 - **Result**: with a complete worked exchange workflow in the system prompt

@@ -202,7 +202,12 @@ def run_ttrl(sp: ServedPolicy, env, update_tasks, eval_tasks, out_path: Path,
     # tool-call mode (verified 2026-08-29) -> 0-call episodes -> the answer
     # penalty self-reinforces a no-tool policy. Greedy keeps the mode.
     for i, task in enumerate(update_tasks):
-        r, ep = roll(policy_model, task, temperature=0.0, seed=0)
+        r, ep = roll(policy_model, task, temperature=args.update_temp, seed=0,
+                     verbose=True)
+        if r.n_tool_calls == 0 and r.transcript:
+            e0 = r.transcript[0]
+            print(f"    [diag-zero] first={repr((e0.content or '')[:100])} "
+                  f"n_entries={len(r.transcript)}", flush=True)
         instr = task.user_scenario.instructions
         task_prompt = instr.task_instructions
         if instr.known_info:
@@ -231,15 +236,17 @@ def run_ttrl(sp: ServedPolicy, env, update_tasks, eval_tasks, out_path: Path,
             policy_model.eval()
         # drift check on this task's probe; adaptive guard: if behavior drifts
         # too far from base, halve the learning rate (collapse protection)
-        probe = tokenizer.apply_chat_template(
-            [{"role": "system",
-              "content": f"You are a retail customer service agent.\n\nPolicy:\n{policy_doc}"},
-             {"role": "user", "content": task_prompt}],
-            tools=schemas, tokenize=False, add_generation_prompt=True)
-        drift = logit_drift(policy_model, probe_ref, tokenizer, probe)
-        if drift > 2.0:
-            lr = max(lr / 2.0, 1e-6)
-            print(f"  [guard] drift {drift:.2f} > 2.0 -> lr {lr:.1e}", flush=True)
+        drift = 0.0
+        if args.drift_every > 0 and i % args.drift_every == 0:
+            probe = tokenizer.apply_chat_template(
+                [{"role": "system",
+                  "content": f"You are a retail customer service agent.\n\nPolicy:\n{policy_doc}"},
+                 {"role": "user", "content": task_prompt}],
+                tools=schemas, tokenize=False, add_generation_prompt=True)
+            drift = logit_drift(policy_model, probe_ref, tokenizer, probe)
+            if drift > 2.0:
+                lr = max(lr / 2.0, 1e-6)
+                print(f"  [guard] drift {drift:.2f} > 2.0 -> lr {lr:.1e}", flush=True)
         update_log.append({"task_id": task.id, "success": r.success,
                            "turns": r.turns, "calls": r.n_tool_calls,
                            "conflicts": conflicts, "halt": halt,
@@ -325,6 +332,12 @@ def main() -> None:
                          "the drift guard replaces the KL anchor)")
     ap.add_argument("--model-dir", default=MODEL_DIR,
                     help="local model directory for the trainer")
+    ap.add_argument("--update-temp", type=float, default=0.0,
+                    help="update-phase rollout temperature (Llama needs >0: "
+                         "its tool mode requires sampling, verified 2026-08-30)")
+    ap.add_argument("--drift-every", type=int, default=1,
+                    help="compute the drift probe every N episodes (8B probes "
+                         "are expensive: 2 full forwards per episode)")
     args = ap.parse_args()
 
     stream = load_stream(args.seed)

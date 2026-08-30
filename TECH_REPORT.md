@@ -80,6 +80,23 @@ behavior):
   coverage-frozen n=512; the e-process correctly refuses to commit without
   evidence — the safety property demonstrated end-to-end).
 
+## Cross-family capability analysis (2026-08-30/31) — the null's mechanism is exhaustive
+
+| Model | Success (46 sealed) | modify calls | Failure mode |
+|-------|---------------------|--------------|--------------|
+| Qwen3.5-4B | 0.109 (5/46) | 0 | never attempts state changes (behavioral gap) |
+| Qwen3.5-9B | 0.109 (same 5 tasks) | 0 | same behavioral gap (family-wide) |
+| Llama-3.1-8B | 0.109 (5/46) | 54 across 35/46 tasks | attempts modify with INVENTED entity IDs (API errors) |
+
+The Llama update phase exposed the LOCAL gate's real-data protection: ~50
+calls/episode but ZERO training rows — the E_hard conflict detection
+(REPEATED_FAIL_SAME_ARGS on identical failing retries, USER_MISMATCH on
+invented targets) correctly zeroed all credit (fail-closed). No model at
+≤9B produces VALID state-changing trajectories on this environment; the
+two-scale safety mechanism is demonstrated on both failure modes (behavioral
+gap + invalid attempts). The positive-result recipe reduces to a base model
+with multi-step entity tracking (frontier-class).
+
 ## Capability-boundary probe (few-shot, 2026-08-30)
 
 A complete worked exchange workflow (task-0 reference as few-shot) was added

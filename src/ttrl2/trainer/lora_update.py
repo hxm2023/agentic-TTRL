@@ -181,9 +181,9 @@ def build_training_rows(transcript, receipts, outcome: bool, baselines: GroupBas
         if pending is None:
             return
         calls = pending["calls"]
-        msg = {"role": "assistant", "content": pending["content"],
-               "tool_calls": [c for c in calls]}
         if calls:
+            msg = {"role": "assistant", "content": pending["content"],
+                   "tool_calls": [c for c in calls]}
             row_advs = []
             idx = pending["start_idx"]
             for c in calls:
@@ -197,7 +197,11 @@ def build_training_rows(transcript, receipts, outcome: bool, baselines: GroupBas
                 "advantage": adv,
                 "tool_names": [c["function"]["name"] for c in calls],
             })
-        messages.append(msg)
+            messages.append(msg)
+        # assistant turns with no calls are NOT added to the history:
+        # (a) Llama-3.1's template raises on tool_calls == 0/None;
+        # (b) they carry no training signal (the final answer is handled
+        # separately by the answer-row logic below)
         pending = None
 
     start_idx = 0
@@ -288,7 +292,8 @@ def grpo_update(model, ref_model, tokenizer, rows, tool_schemas,
     opt = torch.optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()),
                             lr=lr)
     model.train()
-    ref_model.eval()
+    if ref_model is not None:
+        ref_model.eval()
     # Requires flash-linear-attention (fla) kernels: Qwen3.5's torch fallback
     # gated-delta-rule kernel OOMs / breaks autograd on long contexts. With
     # fla installed, a single full-sequence forward + backward fits on one 5090.

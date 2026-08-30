@@ -161,28 +161,61 @@ def rollout_transformers(
         for marker in ("<|im_end|>", "<|eot_id|>"):
             text = text.split(marker)[0]
         calls = parse_tool_calls(text, fmt)
-        result.transcript.append(TranscriptEntry(
-            role="assistant", content=text,
-            tool_calls=[{"id": f"t{i}", "name": c["name"],
-                         "arguments": json.dumps(c["arguments"])}
-                        for i, c in enumerate(calls)]))
         if not calls:
-            break
-        messages.append({"role": "assistant", "content": text})
-        for i, c in enumerate(calls):
-            receipt = episode.step(c["name"], c["arguments"])
-            result.n_tool_calls += 1
-            content = ("" if receipt.ok else f"Error: {receipt.error}")
-            if receipt.ok:
-                try:
-                    content = json.dumps(receipt.output, default=str)[:2000]
-                except TypeError:
-                    content = str(receipt.output)[:2000]
-            messages.append({"role": "tool", "tool_call_id": f"t{i}",
-                             "content": content})
             result.transcript.append(TranscriptEntry(
-                role="tool", content=content, tool_call_id=f"t{i}",
-                name=c["name"]))
+                role="assistant", content=text))
+            break
+        if fmt == "llama3_json":
+            # Llama-3.1 template: one tool call per assistant message; the
+            # transcript mirrors that (per-call assistant entries) so the
+            # training rows render identically
+            for i, c in enumerate(calls):
+                result.transcript.append(TranscriptEntry(
+                    role="assistant", content="",
+                    tool_calls=[{"id": f"t{i}", "name": c["name"],
+                                 "arguments": json.dumps(c["arguments"])}]))
+                messages.append({"role": "assistant", "content": "",
+                                 "tool_calls": [{"id": f"t{i}", "type": "function",
+                                                 "function": {"name": c["name"],
+                                                              "arguments": c["arguments"]}}]})
+                receipt = episode.step(c["name"], c["arguments"])
+                result.n_tool_calls += 1
+                content = ("" if receipt.ok else f"Error: {receipt.error}")
+                if receipt.ok:
+                    try:
+                        content = json.dumps(receipt.output, default=str)[:2000]
+                    except TypeError:
+                        content = str(receipt.output)[:2000]
+                messages.append({"role": "tool", "tool_call_id": f"t{i}",
+                                 "content": content})
+                result.transcript.append(TranscriptEntry(
+                    role="tool", content=content, tool_call_id=f"t{i}",
+                    name=c["name"]))
+        else:
+            result.transcript.append(TranscriptEntry(
+                role="assistant", content=text,
+                tool_calls=[{"id": f"t{i}", "name": c["name"],
+                             "arguments": json.dumps(c["arguments"])}
+                            for i, c in enumerate(calls)]))
+            messages.append({"role": "assistant", "content": text,
+                             "tool_calls": [{"id": f"t{i}", "type": "function",
+                                             "function": {"name": c["name"],
+                                                          "arguments": c["arguments"]}}
+                                            for i, c in enumerate(calls)]})
+            for i, c in enumerate(calls):
+                receipt = episode.step(c["name"], c["arguments"])
+                result.n_tool_calls += 1
+                content = ("" if receipt.ok else f"Error: {receipt.error}")
+                if receipt.ok:
+                    try:
+                        content = json.dumps(receipt.output, default=str)[:2000]
+                    except TypeError:
+                        content = str(receipt.output)[:2000]
+                messages.append({"role": "tool", "tool_call_id": f"t{i}",
+                                 "content": content})
+                result.transcript.append(TranscriptEntry(
+                    role="tool", content=content, tool_call_id=f"t{i}",
+                    name=c["name"]))
         result.turns = turn + 1
     result.success = episode.evaluate()
     return result
