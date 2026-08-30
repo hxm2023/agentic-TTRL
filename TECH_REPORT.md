@@ -68,6 +68,33 @@ behavior):
   coverage-frozen n=512; the e-process correctly refuses to commit without
   evidence — the safety property demonstrated end-to-end).
 
+## Matched-compute accounting (rollout parity)
+
+| Arm | Rollouts consumed | Eval success |
+|-----|------------------|--------------|
+| Frozen | 46 (eval only) | 0.109 |
+| Best-of-4 | 184 (4 × 46 eval) | 0.109 |
+| TTRL (v3/v4, per run) | ~200 (68 update + 92 eval + 40 shadow) | 0.109 |
+| Strong success-replay | ~110 (6 replay + 92 eval) | *pending* |
+
+At comparable rollout budgets, sampling (BoN-4: 184 rollouts) and policy
+learning (TTRL: ~200 rollouts) both fail to move the sealed eval success — the
+null is not a compute-budget artifact.
+
+## What would make TTRL work here (honest forward-looking)
+
+The null's mechanistic explanation (sparse positive signal + exploration gap)
+implies the recipe for a positive result at this mechanism:
+1. A base model strong enough to complete some workflows (the 4B model's
+   systematic early-stop leaves ~6/68 positive examples).
+2. A longer update phase or higher base success (≥0.25) so the update
+   phase generates dense positive signal.
+3. A softer evaluator (partial-credit instead of exact DB-state match) so
+   partial workflow gains are measurable instead of capped at 0.
+4. Larger per-update effect (higher-rank LoRA, more steps) with the KL
+   anchor + drift guard holding — the operating envelope is
+   documented (drift 0.1-2.0 healthy; >5 collapses tool calling).
+
 ## Gate-protection demonstration (user-mandated key upgrade, 2026-08-30)
 
 The gate's protection is demonstrated in two complementary ways:
