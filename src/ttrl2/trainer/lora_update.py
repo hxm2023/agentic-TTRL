@@ -324,17 +324,23 @@ def grpo_update(model, ref_model, tokenizer, rows, tool_schemas,
             target = torch.tensor(seq[tok_s:tok_e], dtype=torch.long).to(model.device)
             inp = torch.tensor([seq], dtype=torch.long).to(model.device)
             attn = torch.ones_like(inp)
-            # ref first and freed before the grad-forward, so peak memory
-            # holds only one logits tensor (bf16) at a time
-            with torch.no_grad():
-                ref_out = ref_model(input_ids=inp, attention_mask=attn)
-                ref_logp = _chunked_logp(ref_out.logits[0, tok_s - 1:tok_e - 1], target)
-            del ref_out
-            torch.cuda.empty_cache()
+            if ref_model is not None:
+                # ref first and freed before the grad-forward, so peak memory
+                # holds only one logits tensor (bf16) at a time
+                with torch.no_grad():
+                    ref_out = ref_model(input_ids=inp, attention_mask=attn)
+                    ref_logp = _chunked_logp(ref_out.logits[0, tok_s - 1:tok_e - 1], target)
+                del ref_out
+                torch.cuda.empty_cache()
             out = model(input_ids=inp, attention_mask=attn)
             tok_logp = _chunked_logp(out.logits[0, tok_s - 1:tok_e - 1], target)
-            kl = (tok_logp.detach() - ref_logp).clamp(min=0)
-            loss = -(adv * tok_logp).mean() + kl_beta * kl.mean()
+            if ref_model is not None:
+                kl = (tok_logp.detach() - ref_logp).clamp(min=0)
+                loss = -(adv * tok_logp).mean() + kl_beta * kl.mean()
+            else:
+                # KL-free mode: 8B+ cannot fit policy+ref on one 5090; the
+                # drift guard replaces the KL anchor's conservatism
+                loss = -(adv * tok_logp).mean()
             loss.backward()
             total_loss += loss.item()
             total_tokens += len(target)

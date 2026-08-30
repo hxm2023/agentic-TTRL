@@ -16,6 +16,7 @@ from ttrl2.agent.loop import RolloutResult, TranscriptEntry, build_tool_schemas
 _TOOL_CALL_RE = re.compile(
     r"<tool_call>\s*<function=([^>]+)>(.*?)</tool_call>", re.DOTALL)
 _PARAM_RE = re.compile(r"<parameter=([^>]+)>\s*(.*?)\s*</parameter>", re.DOTALL)
+_JSON_OBJ_RE = re.compile(r"\{[^{}]*\}", re.DOTALL)
 
 
 def parse_qwen3_xml(text: str) -> list[dict]:
@@ -35,6 +36,71 @@ def parse_qwen3_xml(text: str) -> list[dict]:
     return calls
 
 
+def _iter_json_objects(text: str):
+    """Yield balanced-brace JSON object substrings (nested-safe)."""
+    i = 0
+    while True:
+        start = text.find("{", i)
+        if start < 0:
+            return
+        depth = 0
+        j = start
+        while j < len(text):
+            c = text[j]
+            if c == "{":
+                depth += 1
+            elif c == "}":
+                depth -= 1
+                if depth == 0:
+                    yield text[start:j + 1]
+                    i = j + 1
+                    break
+            j += 1
+        else:
+            i = start + 1
+
+
+def parse_llama3_json(text: str) -> list[dict]:
+    """Parse Llama-3.1-style JSON tool calls.
+
+    The model emits JSON objects like {"name": ..., "parameters": {...}}
+    (optionally wrapped in {"tool_calls": [...]}), possibly several per
+    message. Take every object carrying a tool name.
+    """
+    def args_of(fn: dict) -> dict:
+        # Llama-3.1 emits {"name":..., "parameters": {...}} (verified 2026-08-30)
+        a = fn.get("arguments", fn.get("parameters", {}))
+        return a if isinstance(a, dict) else {}
+
+    calls = []
+    try:
+        full = json.loads(text)
+        if isinstance(full, dict) and isinstance(full.get("tool_calls"), list):
+            for tc in full["tool_calls"]:
+                fn = tc.get("function", tc)
+                if isinstance(fn, dict) and fn.get("name"):
+                    calls.append({"name": fn["name"], "arguments": args_of(fn)})
+            return calls
+    except json.JSONDecodeError:
+        pass
+    for chunk in _iter_json_objects(text):
+        try:
+            obj = json.loads(chunk)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(obj, dict):
+            fn = obj.get("function", obj)
+            if isinstance(fn, dict) and fn.get("name"):
+                calls.append({"name": fn["name"], "arguments": args_of(fn)})
+    return calls
+
+
+def parse_tool_calls(text: str, fmt: str = "qwen3_xml") -> list[dict]:
+    if fmt == "llama3_json":
+        return parse_llama3_json(text)
+    return parse_qwen3_xml(text)
+
+
 def rollout_transformers(
     model,
     tokenizer,
@@ -46,11 +112,13 @@ def rollout_transformers(
     temperature: float = 0.7,
     seed: int | None = None,
     system_override: str | None = None,
+    fmt: str = "qwen3_xml",
 ) -> RolloutResult:
     """Rollout with a transformers/peft model (adapter already active).
 
     `system_override` replaces the default system prompt (few-shot probe /
-    diagnostic use only).
+    diagnostic use only). `fmt` selects the tool-call parser
+    (qwen3_xml | llama3_json).
     """
     schemas = build_tool_schemas(tools)
     task = episode.task
@@ -89,9 +157,10 @@ def rollout_transformers(
             )
         new_tokens = out[0][prompt.shape[1]:]
         text = tokenizer.decode(new_tokens, skip_special_tokens=False)
-        # trim at the end-of-message marker
-        text = text.split("<|im_end|>")[0]
-        calls = parse_qwen3_xml(text)
+        # trim at the end-of-message marker (template-specific)
+        for marker in ("<|im_end|>", "<|eot_id|>"):
+            text = text.split(marker)[0]
+        calls = parse_tool_calls(text, fmt)
         result.transcript.append(TranscriptEntry(
             role="assistant", content=text,
             tool_calls=[{"id": f"t{i}", "name": c["name"],

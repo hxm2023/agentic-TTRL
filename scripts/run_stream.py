@@ -138,14 +138,23 @@ def run_ttrl(sp: ServedPolicy, env, update_tasks, eval_tasks, out_path: Path,
     from ttrl2.gates.global_gate import decide
     from ttrl2.gates.local_gate import DriftMonitor
 
-    tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR, trust_remote_code=True)
+    model_dir = args.model_dir
+    tokenizer = AutoTokenizer.from_pretrained(model_dir, trust_remote_code=True)
     base = AutoModelForCausalLM.from_pretrained(
-        MODEL_DIR, torch_dtype=torch.bfloat16, device_map={"": 0},
+        model_dir, torch_dtype=torch.bfloat16, device_map={"": 0},
         trust_remote_code=True)
     policy_model = make_lora_model(base)
-    ref_model = AutoModelForCausalLM.from_pretrained(
-        MODEL_DIR, torch_dtype=torch.bfloat16, device_map={"": 0},
-        trust_remote_code=True).eval()
+    if args.no_kl:
+        # KL-free: the frozen base (policy_model.base_model) doubles as the
+        # reference for the drift probe; standard dense models (Llama-3.1)
+        # do not have the shared-base grad-poisoning issue of Qwen3.5 hybrid
+        ref_model = None
+        probe_ref = policy_model.base_model
+    else:
+        ref_model = AutoModelForCausalLM.from_pretrained(
+            model_dir, torch_dtype=torch.bfloat16, device_map={"": 0},
+            trust_remote_code=True).eval()
+        probe_ref = ref_model
     policy_doc = env.get_policy()
     tools = env.get_tools()
     schemas = [{"type": "function",
@@ -179,7 +188,8 @@ def run_ttrl(sp: ServedPolicy, env, update_tasks, eval_tasks, out_path: Path,
         r = rollout_transformers(model, tokenizer, ep,
                                  policy_doc, tools, max_turns=20,
                                  max_tokens=384, temperature=temperature,
-                                 seed=seed, system_override=sys_prompt)
+                                 seed=seed, system_override=sys_prompt,
+                                 fmt=args.format)
         if verbose and r.transcript:
             e0 = r.transcript[0]
             print(f"    [diag] training={model.training} "
@@ -226,7 +236,7 @@ def run_ttrl(sp: ServedPolicy, env, update_tasks, eval_tasks, out_path: Path,
               "content": f"You are a retail customer service agent.\n\nPolicy:\n{policy_doc}"},
              {"role": "user", "content": task_prompt}],
             tools=schemas, tokenize=False, add_generation_prompt=True)
-        drift = logit_drift(policy_model, ref_model, tokenizer, probe)
+        drift = logit_drift(policy_model, probe_ref, tokenizer, probe)
         if drift > 2.0:
             lr = max(lr / 2.0, 1e-6)
             print(f"  [guard] drift {drift:.2f} > 2.0 -> lr {lr:.1e}", flush=True)
@@ -242,7 +252,7 @@ def run_ttrl(sp: ServedPolicy, env, update_tasks, eval_tasks, out_path: Path,
     eval_frozen = []
     eval_cand = []
     for i, task in enumerate(eval_tasks):
-        rf, _ = roll(ref_model, task, temperature=0.0, seed=0)
+        rf, _ = roll(probe_ref, task, temperature=0.0, seed=0)
         rc, _ = roll(policy_model, task, temperature=0.0, seed=0)
         eval_frozen.append({"task_id": task.id, "success": rf.success,
                             "turns": rf.turns, "calls": rf.n_tool_calls})
@@ -256,7 +266,7 @@ def run_ttrl(sp: ServedPolicy, env, update_tasks, eval_tasks, out_path: Path,
     shadow_tasks = rng.sample(update_tasks, min(20, len(update_tasks)))
     gain_diffs, harm_diffs = [], []
     for task in shadow_tasks:
-        rf, _ = roll(ref_model, task, temperature=0.0, seed=1)
+        rf, _ = roll(probe_ref, task, temperature=0.0, seed=1)
         rc, _ = roll(policy_model, task, temperature=0.0, seed=1)
         gain_diffs.append((1.0 if rc.success else 0.0) - (1.0 if rf.success else 0.0))
         harm_diffs.append((1.0 if rf.success else 0.0) - (1.0 if rc.success else 0.0))
@@ -307,6 +317,14 @@ def main() -> None:
     ap.add_argument("--fewshot", action="store_true",
                     help="v6: append a worked exchange workflow (task-0 reference, "
                          "few-shot) to the system prompt for rollouts and eval")
+    ap.add_argument("--format", default="qwen3_xml",
+                    choices=["qwen3_xml", "llama3_json"],
+                    help="tool-call parser for the transformers rollout")
+    ap.add_argument("--no-kl", action="store_true",
+                    help="KL-free GRPO (8B+ models: policy+ref exceed one 5090; "
+                         "the drift guard replaces the KL anchor)")
+    ap.add_argument("--model-dir", default=MODEL_DIR,
+                    help="local model directory for the trainer")
     args = ap.parse_args()
 
     stream = load_stream(args.seed)
