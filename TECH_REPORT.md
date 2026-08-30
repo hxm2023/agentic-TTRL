@@ -80,6 +80,17 @@ behavior):
   coverage-frozen n=512; the e-process correctly refuses to commit without
   evidence — the safety property demonstrated end-to-end).
 
+## Capability-boundary probe (few-shot, 2026-08-30)
+
+A complete worked exchange workflow (task-0 reference as few-shot) was added
+to the system prompt to test whether the state-changing behavior is
+prompt-addressable. Result on the sealed 46 tasks: **success 0.109 = frozen;
+modify_calls = 0 across all 46 tasks**. The 4B model never emits a
+state-changing tool call even when shown a full example — the capability is
+a hard boundary of this model×environment pair, closing the "prompt-addressable"
+hypothesis. The exploration gap for state-changing actions is therefore
+absolute, and the positive-result recipe reduces to a stronger base model.
+
 ## Failure-mode taxonomy (frozen policy, 46 sealed eval tasks)
 
 | Mode | Count | Share |

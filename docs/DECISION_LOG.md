@@ -87,6 +87,24 @@ Mandatory pre-read: `C:\Users\w1828\repos\agent-ttrl\phase01\EXPERIMENT_DECISION
   carries episode credit (targets early stopping directly; verified locally).
 - **Compute spent**: ~1 GPUh (baselines + probes).
 
+## D10c — v6 few-shot probe EXECUTED (2026-08-30, autodl4) — capability boundary confirmed
+
+- **Result**: with a complete worked exchange workflow in the system prompt
+  (task-0 reference as few-shot, legitimate), the frozen Qwen3.5-4B on the
+  sealed 46 tasks: **success 0.109 (5/46) = frozen; modify_calls = 0 across
+  ALL 46 tasks** (tasks_with_modify = 0).
+- **Conclusion**: the state-changing behavior is NOT prompt-addressable — a
+  hard capability boundary of this model in this environment. Combined with
+  the structural finding (no positive modify examples in ~400 episodes), the
+  exploration gap is confirmed ABSOLUTE: TTRL cannot learn a behavior the
+  policy never emits AND prompting cannot elicit it. The v6 --fewshot TTRL
+  variant is therefore moot (the rollout distribution is unchanged by the
+  example) — recorded as a negative result, not run.
+- **Cross-server reproducibility bonus**: the probe ran on a FRESH server
+  (autodl4, system-disk copy) and reproduced frozen 0.109 + identical
+  behavior — the profile/environment pins are verified reproducible.
+- Artifact: protocols/fewshot_probe.json.
+
 ## D10b — Server release archival (2026-08-30)
 
 - **All 18 run artifacts** (every manifest produced across the project) are in
