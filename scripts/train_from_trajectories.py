@@ -49,6 +49,8 @@ def main() -> None:
     ap.add_argument("--no-kl", action="store_true")
     ap.add_argument("--fewshot", action="store_true")
     ap.add_argument("--model-dir", default=MODEL_DIR)
+    ap.add_argument("--train-only", action="store_true",
+                    help="train + save the adapter, skip the slow eval")
     ap.add_argument("--out", default="protocols/success_replay_llama.json")
     args = ap.parse_args()
 
@@ -146,6 +148,9 @@ def main() -> None:
                         tokenizer, all_rows, schemas,
                         lr=args.lr, kl_beta=0.1, steps=args.steps)
             policy_model.eval()
+    adapter_dir = "/root/autodl-tmp/adapters/llama_candidate"
+    policy_model.save_pretrained(adapter_dir)
+    print(f"adapter saved -> {adapter_dir}", flush=True)
 
     # ---- 3. eval: frozen vs candidate on the sealed set ----
     tasks = get_tasks("base")
