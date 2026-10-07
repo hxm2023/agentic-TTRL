@@ -1,0 +1,330 @@
+{
+ "stream": "protocols/stream_v2_seed0_short.json",
+ "adapter": "protocols/ttrl_v2_seed0b.adapter",
+ "k": 2,
+ "temperature": 0.7,
+ "engine": "transformers",
+ "tasks": {
+  "110": {
+   "frozen": [
+    {
+     "success": false,
+     "turns": 11,
+     "calls": 8
+    },
+    {
+     "success": true,
+     "turns": 11,
+     "calls": 8
+    }
+   ],
+   "candidate": [
+    {
+     "success": false,
+     "turns": 24,
+     "calls": 22
+    },
+    {
+     "success": true,
+     "turns": 24,
+     "calls": 23
+    }
+   ]
+  },
+  "33": {
+   "frozen": [
+    {
+     "success": true,
+     "turns": 9,
+     "calls": 6
+    },
+    {
+     "success": true,
+     "turns": 9,
+     "calls": 6
+    }
+   ],
+   "candidate": [
+    {
+     "success": true,
+     "turns": 24,
+     "calls": 21
+    },
+    {
+     "success": true,
+     "turns": 24,
+     "calls": 23
+    }
+   ]
+  },
+  "16": {
+   "frozen": [
+    {
+     "success": true,
+     "turns": 11,
+     "calls": 8
+    },
+    {
+     "success": true,
+     "turns": 11,
+     "calls": 8
+    }
+   ],
+   "candidate": [
+    {
+     "success": true,
+     "turns": 24,
+     "calls": 21
+    },
+    {
+     "success": true,
+     "turns": 16,
+     "calls": 13
+    }
+   ]
+  },
+  "104": {
+   "frozen": [
+    {
+     "success": false,
+     "turns": 14,
+     "calls": 11
+    },
+    {
+     "success": false,
+     "turns": 17,
+     "calls": 14
+    }
+   ],
+   "candidate": [
+    {
+     "success": true,
+     "turns": 24,
+     "calls": 22
+    },
+    {
+     "success": false,
+     "turns": 24,
+     "calls": 27
+    }
+   ]
+  },
+  "27": {
+   "frozen": [
+    {
+     "success": true,
+     "turns": 12,
+     "calls": 9
+    },
+    {
+     "success": true,
+     "turns": 10,
+     "calls": 7
+    }
+   ],
+   "candidate": [
+    {
+     "success": true,
+     "turns": 24,
+     "calls": 24
+    },
+    {
+     "success": true,
+     "turns": 24,
+     "calls": 22
+    }
+   ]
+  },
+  "81": {
+   "frozen": [
+    {
+     "success": true,
+     "turns": 11,
+     "calls": 8
+    },
+    {
+     "success": false,
+     "turns": 12,
+     "calls": 9
+    }
+   ],
+   "candidate": [
+    {
+     "success": true,
+     "turns": 15,
+     "calls": 12
+    },
+    {
+     "success": true,
+     "turns": 24,
+     "calls": 23
+    }
+   ]
+  },
+  "55": {
+   "frozen": [
+    {
+     "success": false,
+     "turns": 12,
+     "calls": 9
+    },
+    {
+     "success": false,
+     "turns": 12,
+     "calls": 9
+    }
+   ],
+   "candidate": [
+    {
+     "success": true,
+     "turns": 24,
+     "calls": 22
+    },
+    {
+     "success": true,
+     "turns": 24,
+     "calls": 23
+    }
+   ]
+  },
+  "63": {
+   "frozen": [
+    {
+     "success": true,
+     "turns": 10,
+     "calls": 7
+    },
+    {
+     "success": true,
+     "turns": 10,
+     "calls": 7
+    }
+   ],
+   "candidate": [
+    {
+     "success": true,
+     "turns": 24,
+     "calls": 23
+    },
+    {
+     "success": true,
+     "turns": 15,
+     "calls": 12
+    }
+   ]
+  },
+  "87": {
+   "frozen": [
+    {
+     "success": true,
+     "turns": 14,
+     "calls": 11
+    },
+    {
+     "success": true,
+     "turns": 14,
+     "calls": 11
+    }
+   ],
+   "candidate": [
+    {
+     "success": true,
+     "turns": 24,
+     "calls": 22
+    },
+    {
+     "success": true,
+     "turns": 18,
+     "calls": 15
+    }
+   ]
+  },
+  "56": {
+   "frozen": [
+    {
+     "success": true,
+     "turns": 10,
+     "calls": 7
+    },
+    {
+     "success": true,
+     "turns": 12,
+     "calls": 9
+    }
+   ],
+   "candidate": [
+    {
+     "success": true,
+     "turns": 24,
+     "calls": 21
+    },
+    {
+     "success": true,
+     "turns": 24,
+     "calls": 21
+    }
+   ]
+  },
+  "76": {
+   "frozen": [
+    {
+     "success": true,
+     "turns": 15,
+     "calls": 12
+    },
+    {
+     "success": true,
+     "turns": 16,
+     "calls": 13
+    }
+   ],
+   "candidate": [
+    {
+     "success": true,
+     "turns": 24,
+     "calls": 21
+    },
+    {
+     "success": true,
+     "turns": 24,
+     "calls": 23
+    }
+   ]
+  },
+  "90": {
+   "frozen": [
+    {
+     "success": true,
+     "turns": 11,
+     "calls": 8
+    },
+    {
+     "success": true,
+     "turns": 10,
+     "calls": 7
+    }
+   ],
+   "candidate": [
+    {
+     "success": true,
+     "turns": 24,
+     "calls": 23
+    },
+    {
+     "success": true,
+     "turns": 16,
+     "calls": 13
+    }
+   ]
+  }
+ },
+ "summary": {
+  "frozen_n": 24,
+  "frozen_k": 18,
+  "candidate_n": 24,
+  "candidate_k": 22,
+  "gained": 4,
+  "lost": 0,
+  "mcnemar_p": 0.125
+ }
+}

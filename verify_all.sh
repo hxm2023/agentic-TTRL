@@ -51,7 +51,23 @@ for name, path in [("update_phase", "protocols/ttrl_v2_seed0.json")]:
 PY
 
 echo
-echo "=== 3. harness 修复的对照证据（v1 vs v2 prompt，同一批任务） ==="
+echo "=== 3. 密封留出任务：采样口径（transformers, k=2）——更新后的增益 ==="
+"$PY" - <<'PY2'
+import json, os
+f = "protocols/eval_sampled_tf_band.json"
+if os.path.exists(f):
+    d = json.load(open(f))
+    s = d["summary"]
+    print(f"  frozen    = {s['frozen_k']}/{s['frozen_n']} = {s['frozen_k']/s['frozen_n']:.3f}")
+    print(f"  candidate = {s['candidate_k']}/{s['candidate_n']} = {s['candidate_k']/s['candidate_n']:.3f}"
+          f"   delta={(s['candidate_k']-s['frozen_k'])/s['frozen_n']:+.3f}"
+          f"  gained={s['gained']} lost={s['lost']}  McNemar p={s['mcnemar_p']:.3f}")
+else:
+    print("  (protocols/eval_sampled_tf_band.json missing)")
+PY2
+
+echo
+echo "=== 4. harness 修复的对照证据（v1 vs v2 prompt，同一批任务） ==="
 "$PY" - <<'PY'
 import json
 d = json.load(open("protocols/diag_prompt_v2.json"))
@@ -64,7 +80,7 @@ for tid, t in d["tasks"].items():
 PY
 
 echo
-echo "=== 4. 单元测试 ==="
+echo "=== 5. 单元测试 ==="
 "$PY" -m pytest tests/ -q 2>&1 | tail -3
 
 echo
