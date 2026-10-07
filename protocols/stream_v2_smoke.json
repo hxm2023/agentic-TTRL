@@ -1,0 +1,7 @@
+{
+ "protocol": "v2_fixed_prompt",
+ "seed": 0,
+ "note": "smoke test stream: 3 update + 3 eval tasks",
+ "update_ids": ["1", "44", "108"],
+ "eval_ids": ["5", "12", "30"]
+}

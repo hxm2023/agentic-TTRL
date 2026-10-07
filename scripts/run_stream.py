@@ -28,6 +28,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
+from ttrl2.agent.loop import build_user_prompt  # noqa: E402
 from ttrl2.env.tau2_env import Tau2Episode  # noqa: E402
 from ttrl2.serving.vllm_client import ServedPolicy  # noqa: E402
 from ttrl2.trainer.lora_update import (  # noqa: E402
@@ -144,6 +145,9 @@ def run_ttrl(sp: ServedPolicy, env, update_tasks, eval_tasks, out_path: Path,
         model_dir, torch_dtype=torch.bfloat16, device_map={"": 0},
         trust_remote_code=True)
     policy_model = make_lora_model(base)
+    # PEFT leaves the model in train mode; dropout during rollouts corrupts
+    # generations (the pre-update episodes were silently affected)
+    policy_model.eval()
     if args.no_kl:
         # KL-free: the frozen base (policy_model.base_model) doubles as the
         # reference for the drift probe; standard dense models (Llama-3.1)
@@ -186,8 +190,8 @@ def run_ttrl(sp: ServedPolicy, env, update_tasks, eval_tasks, out_path: Path,
     def roll(model, task, temperature, seed, verbose: bool = False):
         ep = Tau2Episode(task)
         r = rollout_transformers(model, tokenizer, ep,
-                                 policy_doc, tools, max_turns=20,
-                                 max_tokens=384, temperature=temperature,
+                                 policy_doc, tools, max_turns=24,
+                                 max_tokens=2048, temperature=temperature,
                                  seed=seed, system_override=sys_prompt,
                                  fmt=args.format)
         if verbose and r.transcript:
@@ -208,12 +212,7 @@ def run_ttrl(sp: ServedPolicy, env, update_tasks, eval_tasks, out_path: Path,
             e0 = r.transcript[0]
             print(f"    [diag-zero] first={repr((e0.content or '')[:100])} "
                   f"n_entries={len(r.transcript)}", flush=True)
-        instr = task.user_scenario.instructions
-        task_prompt = instr.task_instructions
-        if instr.known_info:
-            task_prompt += f"\n\nKnown information: {instr.known_info}"
-        if instr.unknown_info:
-            task_prompt += f"\n\nUnknown information: {instr.unknown_info}"
+        task_prompt = build_user_prompt(task)
         identified = None
         for rc in ep.record.receipts:
             if rc.tool_name in ("find_user_id_by_name_zip", "find_user_id_by_email") and rc.ok:
@@ -224,13 +223,20 @@ def run_ttrl(sp: ServedPolicy, env, update_tasks, eval_tasks, out_path: Path,
         rows = build_training_rows(r.transcript, ep.record.receipts,
                                    r.success or False, baselines, conflicts,
                                    policy_doc, task_prompt, schemas)
+        if len(rows) > args.max_rows:
+            # thinking-heavy episodes yield hundreds of rows whose contexts
+            # grow past the memory envelope; keep the workflow head and the
+            # tail (write + terminate turns carry the episode credit)
+            rows = rows[:4] + rows[-(args.max_rows - 4):]
         stats = {"rows": 0, "tokens": 0, "loss": 0.0}
         if rows and not halt:
             # successful episodes get more steps: the sparse positive signal
             # is the update's only teacher (exploration-gap fix, v4)
             ep_steps = args.success_steps if (r.success or False) else args.steps
             stats = grpo_update(policy_model, ref_model, tokenizer, rows, schemas,
-                                lr=lr, kl_beta=args.kl_beta, steps=ep_steps)
+                                lr=lr, kl_beta=args.kl_beta, steps=ep_steps,
+                                max_seq_len=args.max_seq_len)
+            torch.cuda.empty_cache()
             # CRITICAL: grpo_update leaves the model in train() (dropout active);
             # generations after that are corrupted (empty outputs). Restore eval.
             policy_model.eval()
@@ -242,7 +248,8 @@ def run_ttrl(sp: ServedPolicy, env, update_tasks, eval_tasks, out_path: Path,
                 [{"role": "system",
                   "content": f"You are a retail customer service agent.\n\nPolicy:\n{policy_doc}"},
                  {"role": "user", "content": task_prompt}],
-                tools=schemas, tokenize=False, add_generation_prompt=True)
+                tools=schemas, tokenize=False, add_generation_prompt=True,
+                enable_thinking=False)
             drift = logit_drift(policy_model, probe_ref, tokenizer, probe)
             if drift > 2.0:
                 lr = max(lr / 2.0, 1e-6)
@@ -255,22 +262,38 @@ def run_ttrl(sp: ServedPolicy, env, update_tasks, eval_tasks, out_path: Path,
         print(f"[{i+1}/{len(update_tasks)}] {task.id}: succ={r.success} "
               f"rows={stats['rows']} drift={drift:.3f} halt={halt}", flush=True)
 
+    # persist the accumulated adapter so follow-up evaluations (sampled
+    # pass@k, extra seeds) can reuse it without re-running the update phase
+    adapter_dir = out_path.with_suffix(".adapter")
+    try:
+        policy_model.save_pretrained(str(adapter_dir))
+        print(f"[ttrl] adapter saved -> {adapter_dir}", flush=True)
+    except Exception as e:  # noqa: BLE001 — eval must not die on a save hiccup
+        print(f"[ttrl] adapter save failed: {e}", flush=True)
+
     # ---- EVAL PHASE (sealed): frozen vs candidate ----
+    # >1 sample per arm evaluates pass@1 under sampling (the distribution the
+    # updates train on) instead of a single deterministic greedy trajectory
+    eval_temp = 0.0 if args.eval_samples <= 1 else 0.7
     eval_frozen = []
     eval_cand = []
     for i, task in enumerate(eval_tasks):
-        rf, _ = roll(probe_ref, task, temperature=0.0, seed=0)
-        rc, _ = roll(policy_model, task, temperature=0.0, seed=0)
-        eval_frozen.append({"task_id": task.id, "success": rf.success,
-                            "turns": rf.turns, "calls": rf.n_tool_calls})
-        eval_cand.append({"task_id": task.id, "success": rc.success,
-                          "turns": rc.turns, "calls": rc.n_tool_calls})
-        print(f"[eval {i+1}/{len(eval_tasks)}] {task.id}: "
-              f"frozen={rf.success} candidate={rc.success}", flush=True)
+        for k in range(args.eval_samples):
+            rf, _ = roll(probe_ref, task, temperature=eval_temp, seed=k)
+            rc, _ = roll(policy_model, task, temperature=eval_temp, seed=k)
+            eval_frozen.append({"task_id": task.id, "sample": k,
+                                "success": rf.success, "turns": rf.turns,
+                                "calls": rf.n_tool_calls})
+            eval_cand.append({"task_id": task.id, "sample": k,
+                              "success": rc.success, "turns": rc.turns,
+                              "calls": rc.n_tool_calls})
+            print(f"[eval {i+1}/{len(eval_tasks)} s{k}] {task.id}: "
+                  f"frozen={rf.success} candidate={rc.success}", flush=True)
 
     # ---- GLOBAL GATE: paired shadow re-rollouts on update-phase tasks ----
     rng = random.Random(args.seed)
-    shadow_tasks = rng.sample(update_tasks, min(20, len(update_tasks)))
+    shadow_tasks = rng.sample(update_tasks,
+                              min(args.gate_shadow, len(update_tasks)))
     gain_diffs, harm_diffs = [], []
     for task in shadow_tasks:
         rf, _ = roll(probe_ref, task, temperature=0.0, seed=1)
@@ -297,7 +320,9 @@ def run_ttrl(sp: ServedPolicy, env, update_tasks, eval_tasks, out_path: Path,
                  "mean_harm": sum(harm_diffs) / len(harm_diffs) if harm_diffs else 0.0},
         "elapsed_s": round(time.time() - t0, 1),
         "config": {"steps": args.steps, "lr": args.lr, "kl_beta": args.kl_beta,
-                   "n_update": len(update_tasks), "n_eval": len(eval_tasks)},
+                   "n_update": len(update_tasks), "n_eval": len(eval_tasks),
+                   "eval_samples": args.eval_samples,
+                   "gate_shadow": args.gate_shadow},
     }
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(out, indent=1))
@@ -338,11 +363,30 @@ def main() -> None:
     ap.add_argument("--drift-every", type=int, default=1,
                     help="compute the drift probe every N episodes (8B probes "
                          "are expensive: 2 full forwards per episode)")
+    ap.add_argument("--max-rows", type=int, default=20,
+                    help="cap training rows per episode (head 4 + tail)")
+    ap.add_argument("--max-seq-len", type=int, default=8192,
+                    help="skip training rows whose context exceeds this")
+    ap.add_argument("--eval-samples", type=int, default=1,
+                    help="samples per eval task per arm (>1 = sampled pass@1)")
+    ap.add_argument("--gate-shadow", type=int, default=20,
+                    help="paired shadow re-rollouts for the global gate")
+    ap.add_argument("--stream-file", default=None,
+                    help="pre-registered stream JSON from select_band.py "
+                         "(uses its update_ids / eval_ids instead of the shuffle)")
     args = ap.parse_args()
 
-    stream = load_stream(args.seed)
-    update_tasks = stream[:args.n_update]
-    eval_tasks = stream[args.n_update:args.n_update + args.n_eval]
+    if args.stream_file:
+        spec = json.loads(Path(args.stream_file).read_text())
+        by_id = {t.id: t for t in get_tasks("base")}
+        update_tasks = [by_id[i] for i in spec["update_ids"]]
+        eval_tasks = [by_id[i] for i in spec["eval_ids"]]
+        if args.n_eval and args.n_eval < len(eval_tasks):
+            eval_tasks = eval_tasks[:args.n_eval]
+    else:
+        stream = load_stream(args.seed)
+        update_tasks = stream[:args.n_update]
+        eval_tasks = stream[args.n_update:args.n_update + args.n_eval]
     out_path = Path(args.out or f"protocols/{args.mode}_seed{args.seed}.json")
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -362,7 +406,10 @@ def main() -> None:
     else:
         run_ttrl(sp, env, update_tasks, eval_tasks, out_path, args,
                  stream_meta={"seed": args.seed, "n_update": len(update_tasks),
-                              "n_eval": len(eval_tasks)})
+                              "n_eval": len(eval_tasks),
+                              "stream_file": args.stream_file,
+                              "update_ids": [t.id for t in update_tasks],
+                              "eval_ids": [t.id for t in eval_tasks]})
 
 
 if __name__ == "__main__":

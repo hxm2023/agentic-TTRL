@@ -23,6 +23,7 @@ from ttrl2.trainer.lora_update import (  # noqa: E402
     logit_drift, make_lora_model,
 )
 from tau2.domains.retail.environment import get_environment, get_tasks  # noqa: E402
+from ttrl2.agent.loop import build_user_prompt  # noqa: E402
 from ttrl2.env.tau2_env import Tau2Episode  # noqa: E402
 
 MODEL_DIR = "/root/autodl-tmp/models/Qwen3.5-4B"
@@ -81,11 +82,7 @@ def main() -> None:
     conflicts = detect_conflicts(ep.record.receipts, identified)
     print(f"[smoke] conflicts: {conflicts}", flush=True)
     instr = task.user_scenario.instructions
-    task_prompt = instr.task_instructions
-    if instr.known_info:
-        task_prompt += f"\n\nKnown information: {instr.known_info}"
-    if instr.unknown_info:
-        task_prompt += f"\n\nUnknown information: {instr.unknown_info}"
+    task_prompt = build_user_prompt(task)
     tool_schemas = [{"type": "function",
                      "function": {"name": t.name,
                                   "description": (t.long_desc or t.short_desc or "")[:1024],

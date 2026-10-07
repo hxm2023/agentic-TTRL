@@ -1,0 +1,672 @@
+{
+ "mode": "sweep_frozen",
+ "shard": "2/4",
+ "samples": 4,
+ "temperature": 0.7,
+ "tasks": {
+  "15": {
+   "n_write_actions": 1,
+   "runs": [
+    {
+     "success": false,
+     "turns": 9,
+     "n_calls": 6,
+     "n_modify": 0,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "get_product_details"
+     ]
+    },
+    {
+     "success": false,
+     "turns": 11,
+     "n_calls": 8,
+     "n_modify": 0,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "get_product_details",
+      "get_product_details",
+      "get_product_details"
+     ]
+    },
+    {
+     "success": false,
+     "turns": 10,
+     "n_calls": 7,
+     "n_modify": 0,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "get_product_details",
+      "get_item_details"
+     ]
+    },
+    {
+     "success": false,
+     "turns": 10,
+     "n_calls": 7,
+     "n_modify": 0,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "get_product_details",
+      "get_product_details"
+     ]
+    }
+   ]
+  },
+  "27": {
+   "n_write_actions": 1,
+   "runs": [
+    {
+     "success": true,
+     "turns": 13,
+     "n_calls": 10,
+     "n_modify": 1,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "get_product_details",
+      "get_item_details",
+      "get_item_details",
+      "exchange_delivered_order_items"
+     ]
+    },
+    {
+     "success": true,
+     "turns": 14,
+     "n_calls": 11,
+     "n_modify": 1,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "get_product_details",
+      "get_item_details",
+      "get_order_details",
+      "get_item_details",
+      "exchange_delivered_order_items",
+      "transfer_to_human_agents"
+     ]
+    },
+    {
+     "success": true,
+     "turns": 12,
+     "n_calls": 9,
+     "n_modify": 1,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "get_product_details",
+      "exchange_delivered_order_items",
+      "get_order_details"
+     ]
+    },
+    {
+     "success": true,
+     "turns": 11,
+     "n_calls": 8,
+     "n_modify": 1,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "get_product_details",
+      "exchange_delivered_order_items"
+     ]
+    }
+   ]
+  },
+  "33": {
+   "n_write_actions": 1,
+   "runs": [
+    {
+     "success": true,
+     "turns": 9,
+     "n_calls": 6,
+     "n_modify": 1,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "modify_user_address"
+     ]
+    },
+    {
+     "success": true,
+     "turns": 9,
+     "n_calls": 6,
+     "n_modify": 1,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "modify_user_address"
+     ]
+    },
+    {
+     "success": false,
+     "turns": 7,
+     "n_calls": 6,
+     "n_modify": 1,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "modify_user_address"
+     ]
+    },
+    {
+     "success": true,
+     "turns": 9,
+     "n_calls": 6,
+     "n_modify": 1,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "modify_user_address"
+     ]
+    }
+   ]
+  },
+  "38": {
+   "n_write_actions": 1,
+   "runs": [
+    {
+     "success": true,
+     "turns": 13,
+     "n_calls": 10,
+     "n_modify": 1,
+     "calls": [
+      "find_user_id_by_email",
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_product_details",
+      "get_product_details",
+      "get_product_details",
+      "get_product_details",
+      "get_product_details",
+      "cancel_pending_order"
+     ]
+    },
+    {
+     "success": false,
+     "turns": 12,
+     "n_calls": 9,
+     "n_modify": 0,
+     "calls": [
+      "find_user_id_by_email",
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_product_details",
+      "get_product_details",
+      "get_product_details",
+      "get_product_details",
+      "get_product_details"
+     ]
+    },
+    {
+     "success": false,
+     "turns": 12,
+     "n_calls": 9,
+     "n_modify": 0,
+     "calls": [
+      "find_user_id_by_email",
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_product_details",
+      "get_product_details",
+      "get_product_details",
+      "get_product_details",
+      "get_product_details"
+     ]
+    },
+    {
+     "success": false,
+     "turns": 12,
+     "n_calls": 9,
+     "n_modify": 0,
+     "calls": [
+      "find_user_id_by_email",
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_product_details",
+      "get_product_details",
+      "get_product_details",
+      "get_product_details",
+      "get_product_details"
+     ]
+    }
+   ]
+  },
+  "49": {
+   "n_write_actions": 1,
+   "runs": [
+    {
+     "success": true,
+     "turns": 12,
+     "n_calls": 9,
+     "n_modify": 1,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "get_product_details",
+      "exchange_delivered_order_items"
+     ]
+    },
+    {
+     "success": true,
+     "turns": 13,
+     "n_calls": 10,
+     "n_modify": 1,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "get_product_details",
+      "exchange_delivered_order_items",
+      "get_order_details"
+     ]
+    },
+    {
+     "success": true,
+     "turns": 12,
+     "n_calls": 9,
+     "n_modify": 1,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "get_product_details",
+      "exchange_delivered_order_items"
+     ]
+    },
+    {
+     "success": true,
+     "turns": 11,
+     "n_calls": 8,
+     "n_modify": 1,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "exchange_delivered_order_items"
+     ]
+    }
+   ]
+  },
+  "60": {
+   "n_write_actions": 1,
+   "runs": [
+    {
+     "success": true,
+     "turns": 8,
+     "n_calls": 5,
+     "n_modify": 1,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_order_details",
+      "get_product_details",
+      "get_user_details",
+      "modify_pending_order_items"
+     ]
+    },
+    {
+     "success": true,
+     "turns": 8,
+     "n_calls": 5,
+     "n_modify": 1,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_order_details",
+      "get_product_details",
+      "get_user_details",
+      "modify_pending_order_items"
+     ]
+    },
+    {
+     "success": true,
+     "turns": 9,
+     "n_calls": 6,
+     "n_modify": 2,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_product_details",
+      "modify_pending_order_items",
+      "modify_pending_order_items"
+     ]
+    },
+    {
+     "success": true,
+     "turns": 7,
+     "n_calls": 4,
+     "n_modify": 1,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_order_details",
+      "get_product_details",
+      "modify_pending_order_items"
+     ]
+    }
+   ]
+  },
+  "70": {
+   "n_write_actions": 1,
+   "runs": [
+    {
+     "success": true,
+     "turns": 12,
+     "n_calls": 9,
+     "n_modify": 1,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "get_product_details",
+      "calculate",
+      "exchange_delivered_order_items"
+     ]
+    },
+    {
+     "success": true,
+     "turns": 12,
+     "n_calls": 9,
+     "n_modify": 1,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "get_product_details",
+      "calculate",
+      "exchange_delivered_order_items"
+     ]
+    },
+    {
+     "success": true,
+     "turns": 11,
+     "n_calls": 8,
+     "n_modify": 1,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "get_product_details",
+      "exchange_delivered_order_items"
+     ]
+    },
+    {
+     "success": true,
+     "turns": 11,
+     "n_calls": 8,
+     "n_modify": 1,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "get_product_details",
+      "exchange_delivered_order_items"
+     ]
+    }
+   ]
+  },
+  "84": {
+   "n_write_actions": 1,
+   "runs": [
+    {
+     "success": true,
+     "turns": 10,
+     "n_calls": 7,
+     "n_modify": 1,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "return_delivered_order_items"
+     ]
+    },
+    {
+     "success": true,
+     "turns": 10,
+     "n_calls": 7,
+     "n_modify": 1,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "return_delivered_order_items"
+     ]
+    },
+    {
+     "success": true,
+     "turns": 10,
+     "n_calls": 7,
+     "n_modify": 1,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "return_delivered_order_items"
+     ]
+    },
+    {
+     "success": true,
+     "turns": 11,
+     "n_calls": 8,
+     "n_modify": 1,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "return_delivered_order_items",
+      "get_user_details"
+     ]
+    }
+   ]
+  },
+  "94": {
+   "n_write_actions": 1,
+   "runs": [
+    {
+     "success": false,
+     "turns": 8,
+     "n_calls": 5,
+     "n_modify": 0,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_order_details",
+      "get_product_details"
+     ]
+    },
+    {
+     "success": false,
+     "turns": 8,
+     "n_calls": 5,
+     "n_modify": 0,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_order_details",
+      "get_product_details"
+     ]
+    },
+    {
+     "success": false,
+     "turns": 8,
+     "n_calls": 5,
+     "n_modify": 0,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_order_details",
+      "get_product_details"
+     ]
+    },
+    {
+     "success": false,
+     "turns": 9,
+     "n_calls": 6,
+     "n_modify": 1,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_order_details",
+      "get_product_details",
+      "exchange_delivered_order_items"
+     ]
+    }
+   ]
+  },
+  "108": {
+   "n_write_actions": 1,
+   "runs": [
+    {
+     "success": true,
+     "turns": 10,
+     "n_calls": 7,
+     "n_modify": 1,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "calculate",
+      "return_delivered_order_items"
+     ]
+    },
+    {
+     "success": true,
+     "turns": 10,
+     "n_calls": 7,
+     "n_modify": 1,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "calculate",
+      "return_delivered_order_items"
+     ]
+    },
+    {
+     "success": true,
+     "turns": 9,
+     "n_calls": 6,
+     "n_modify": 1,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "return_delivered_order_items"
+     ]
+    },
+    {
+     "success": true,
+     "turns": 9,
+     "n_calls": 6,
+     "n_modify": 1,
+     "calls": [
+      "find_user_id_by_name_zip",
+      "get_user_details",
+      "get_order_details",
+      "get_order_details",
+      "get_order_details",
+      "return_delivered_order_items"
+     ]
+    }
+   ]
+  }
+ },
+ "elapsed_s": 2527.8
+}

@@ -43,7 +43,7 @@ class ServedPolicy:
 
     def rollout_episode(self, episode, policy: str, tools: list,
                         adapter: str | None = None,
-                        max_turns: int = 20, max_tokens: int = 256,
+                        max_turns: int = 20, max_tokens: int = 1024,
                         temperature: float = 0.7, seed: int | None = None):
         model = adapter if adapter else self.base_model
         return rollout(self.client, model, episode, policy, tools,

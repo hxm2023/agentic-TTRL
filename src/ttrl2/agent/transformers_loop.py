@@ -11,7 +11,8 @@ import re
 
 import torch
 
-from ttrl2.agent.loop import RolloutResult, TranscriptEntry, build_tool_schemas
+from ttrl2.agent.loop import (RolloutResult, TranscriptEntry, build_tool_schemas,
+                              build_user_prompt, stub_user_reply)
 
 _TOOL_CALL_RE = re.compile(
     r"<tool_call>\s*<function=([^>]+)>(.*?)</tool_call>", re.DOTALL)
@@ -108,26 +109,22 @@ def rollout_transformers(
     policy: str,
     tools: list,
     max_turns: int = 20,
-    max_tokens: int = 256,
+    max_tokens: int = 1024,
     temperature: float = 0.7,
     seed: int | None = None,
     system_override: str | None = None,
     fmt: str = "qwen3_xml",
+    n_stub: int = 3,
+    no_think: bool = False,
 ) -> RolloutResult:
     """Rollout with a transformers/peft model (adapter already active).
 
-    `system_override` replaces the default system prompt (few-shot probe /
-    diagnostic use only). `fmt` selects the tool-call parser
-    (qwen3_xml | llama3_json).
+    Protocol v2 (same as the vLLM path): request-as-prompt, scripted user
+    replies, thinking disabled. `system_override` is for diagnostics only.
     """
     schemas = build_tool_schemas(tools)
     task = episode.task
-    instr = task.user_scenario.instructions
-    user_prompt = instr.task_instructions
-    if instr.known_info:
-        user_prompt += f"\n\nKnown information: {instr.known_info}"
-    if instr.unknown_info:
-        user_prompt += f"\n\nUnknown information: {instr.unknown_info}"
+    user_prompt = build_user_prompt(task)
 
     messages: list[dict] = [
         {"role": "system",
@@ -136,13 +133,14 @@ def rollout_transformers(
         {"role": "user", "content": user_prompt},
     ]
     result = RolloutResult(success=None, turns=0, n_tool_calls=0)
+    stubs_left = n_stub
     if seed is not None:
         torch.manual_seed(seed)
 
     for turn in range(max_turns):
         rendered = tokenizer.apply_chat_template(
             messages, tools=schemas, tokenize=False,
-            add_generation_prompt=True)
+            add_generation_prompt=True, enable_thinking=not no_think)
         prompt = tokenizer(rendered, return_tensors="pt")["input_ids"]
         prompt = prompt.to(model.device)
         with torch.no_grad():
@@ -164,6 +162,14 @@ def rollout_transformers(
         if not calls:
             result.transcript.append(TranscriptEntry(
                 role="assistant", content=text))
+            if stubs_left > 0:
+                stubs_left -= 1
+                reply = stub_user_reply(text)
+                messages.append({"role": "assistant", "content": text})
+                messages.append({"role": "user", "content": reply})
+                result.transcript.append(TranscriptEntry(role="user", content=reply))
+                result.turns = turn + 1
+                continue
             break
         if fmt == "llama3_json":
             # Llama-3.1 template: one tool call per assistant message; the
@@ -192,12 +198,17 @@ def rollout_transformers(
                     role="tool", content=content, tool_call_id=f"t{i}",
                     name=c["name"]))
         else:
+            # content must NOT keep the <tool_call> XML: the template renders
+            # structured tool_calls separately, and a duplicated call in the
+            # history pushes the model into echoing/repeating calls (observed
+            # as read-call loops that never reach the write step)
+            content_text = _TOOL_CALL_RE.sub("", text).strip()
             result.transcript.append(TranscriptEntry(
-                role="assistant", content=text,
+                role="assistant", content=content_text,
                 tool_calls=[{"id": f"t{i}", "name": c["name"],
                              "arguments": json.dumps(c["arguments"])}
                             for i, c in enumerate(calls)]))
-            messages.append({"role": "assistant", "content": text,
+            messages.append({"role": "assistant", "content": content_text,
                              "tool_calls": [{"id": f"t{i}", "type": "function",
                                              "function": {"name": c["name"],
                                                           "arguments": c["arguments"]}}

@@ -225,6 +225,11 @@ def build_training_rows(transcript, receipts, outcome: bool, baselines: GroupBas
             content = (entry.content or "")[:400]
             messages.append({"role": "tool", "tool_call_id": entry.tool_call_id,
                              "content": content})
+        elif entry.role == "user":
+            # scripted user reply (protocol v2): part of the conversation the
+            # policy acted in, so it must appear in every training context
+            flush()
+            messages.append({"role": "user", "content": entry.content or ""})
     flush()
     # the final answer turn (no tool calls) is the TERMINATE action: give it
     # the episode credit so "stop early on failure" is penalized and
@@ -282,7 +287,8 @@ def _chunked_logp(logits: "torch.Tensor", target: "torch.Tensor",
 
 def grpo_update(model, ref_model, tokenizer, rows, tool_schemas,
                 lr: float = 5e-5, kl_beta: float = 0.1, steps: int = 4,
-                max_seq_len: int = 8192, grad_clip: float = 1.0) -> dict:
+                max_seq_len: int = 16384, grad_clip: float = 1.0,
+                no_think: bool = False) -> dict:
     """Advantage-weighted policy gradient on tool-call spans + KL vs frozen ref.
 
     Ref = frozen base policy (parent) -> conservatism at optimizer level.
@@ -309,7 +315,7 @@ def grpo_update(model, ref_model, tokenizer, rows, tool_schemas,
             msgs = row["messages"]
             rendered = tokenizer.apply_chat_template(
                 msgs, tools=tool_schemas, tokenize=False,
-                add_generation_prompt=False)
+                add_generation_prompt=False, enable_thinking=not no_think)
             span = _tool_call_span(rendered)
             if span is None:
                 continue

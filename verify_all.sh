@@ -5,52 +5,67 @@ set -eu
 cd "$(dirname "$0")"
 PY=$(command -v python3 || command -v python)   # Windows/Git-Bash 兼容（路径含空格，调用加引号）
 
-echo "=== 1. 冻结基线（46 任务密封集） ==="
+echo "=== 1. protocol v2：冻结 sweep（114 任务 × 4 采样, T=0.7, thinking off） ==="
+"$PY" - <<'PY'
+import json, glob
+rows = []
+for f in sorted(glob.glob("protocols/sweeps/sweep_s4_t0.7_shard*.jsonl")):
+    for line in open(f, encoding="utf-8"):
+        try:
+            rows.append(json.loads(line))
+        except json.JSONDecodeError:
+            pass
+full = [r for r in rows if len(r["runs"]) == 4]
+write = [r for r in full if r["n_write_actions"] > 0]
+band = [r for r in write if 0 < sum(x["success"] for x in r["runs"]) < 4]
+zero = [r for r in write if sum(x["success"] for x in r["runs"]) == 0]
+sat = [r for r in write if sum(x["success"] for x in r["runs"]) == 4]
+ok = sum(1 for r in full for x in r["runs"] if x["success"])
+n = sum(len(r["runs"]) for r in full)
+print(f"  tasks={len(full)}  frozen_rate={ok/n:.3f}  band={len(band)} zero={len(zero)} sat={len(sat)}")
+PY
+
+echo
+echo "=== 2. 同配置冻结基线（thinking ON, 42 个流/评测任务, k=4） vs 在线更新 ==="
+"$PY" - <<'PY'
+import json, glob
+agg = {}
+for f in glob.glob("protocols/sweeps/sweep_s4_t0.7_think_shard*.json"):
+    for tid, t in json.load(open(f))["tasks"].items():
+        agg.setdefault(tid, []).extend(t["runs"])
+spec = json.load(open("protocols/stream_v2_seed0_short.json"))
+runs = [r for t in spec["update_ids"] for r in agg.get(t, [])]
+frozen = sum(1 for r in runs if r["success"]) / max(len(runs), 1)
+d = json.load(open("protocols/ttrl_v2_seed0.json"))
+up = d["update_phase"]
+solved = sum(1 for u in up if u["success"])
+print(f"  update stream (n={len(up)}): frozen={frozen:.3f}  ->  online(updated)={solved/len(up):.3f}"
+      f"   delta={solved/len(up)-frozen:+.3f}")
+ev = d["eval"]
+print(f"  sealed eval (n={len(ev['frozen'])} greedy): frozen={ev['frozen_rate']:.3f}"
+      f"  candidate={ev['candidate_rate']:.3f}  delta={ev['candidate_rate']-ev['frozen_rate']:+.3f}")
+for name, path in [("update_phase", "protocols/ttrl_v2_seed0.json")]:
+    dd = json.load(open(path))
+    drift = [u["drift"] for u in dd["update_phase"] if "drift" in u]
+    print(f"  behavior drift: {drift[0]:.3f} -> {drift[-1]:.3f} over {len(drift)} updates")
+PY
+
+echo
+echo "=== 3. harness 修复的对照证据（v1 vs v2 prompt，同一批任务） ==="
 "$PY" - <<'PY'
 import json
-d = json.load(open("protocols/frozen_seed0.json"))
-print(f"  n = {d['n']}   success_rate = {d['success_rate']:.4f}  ({d['n_success']}/{d['n']})")
+d = json.load(open("protocols/diag_prompt_v2.json"))
+for tid, t in d["tasks"].items():
+    for arm in ("v1_prompt", "v2_prompt"):
+        rs = t["arms"][arm]
+        ok = sum(1 for r in rs if r["success"])
+        mod = sum(r["n_modify"] for r in rs)
+        print(f"  task {tid:>3} {arm:9s}: {ok}/{len(rs)} success, modify-calls={mod}")
 PY
 
 echo
-echo "=== 2. 主对比：部署期在线更新后，成功率有没有变？ ==="
-"$PY" - <<'PY'
-import json, glob
-for f in ["protocols/ttrl_seed0.json", "protocols/ttrl_seed1_v3.json", "protocols/success_replay.json"]:
-    d = json.load(open(f))
-    ev = d.get("eval", {})
-    g = d.get("gate", {})
-    print(f"  {f:<34} frozen={ev.get('frozen_rate', 0):.4f}  candidate={ev.get('candidate_rate', 0):.4f}"
-          f"  行为差异={ev.get('behavior_diff', '-')}  门控={g.get('decision', '-')}")
-PY
-
-echo
-echo "=== 3. 行为漂移（逐次更新，证明更新真的在改行为） ==="
-"$PY" - <<'PY'
-import json, glob
-for f in sorted(glob.glob("protocols/ttrl_seed*_v*.json")) + ["protocols/ttrl_seed0_greedy.json"]:
-    d = json.load(open(f))
-    up = d.get("update_phase") or []
-    dr = [u["drift"] for u in up if isinstance(u, dict) and "drift" in u]
-    if dr:
-        print(f"  {f.split('/')[-1]:<26} 更新 {len(dr)} 次: {dr[0]:.3f} -> {dr[-1]:.3f}  (峰值 {max(dr):.2f})")
-PY
-
-echo
-echo "=== 4. 机制发现 + 其它探针 ==="
-"$PY" - <<'PY'
-import json, os
-for f, keys in [("protocols/success_replay_strong.json", ("mode", "passes", "n_rows")),
-                ("protocols/failure_taxonomy.json", ("counts", "n")),
-                ("protocols/fewshot_probe.json", ("mode", "success_rate"))]:
-    if os.path.exists(f):
-        d = json.load(open(f))
-        print(f"  {f:<40}", {k: d.get(k) for k in keys if k in d})
-PY
-
-echo
-echo "=== 5. 单元测试 ==="
+echo "=== 4. 单元测试 ==="
 "$PY" -m pytest tests/ -q 2>&1 | tail -3
 
 echo
-echo "（端到端链路复现：bash reproduce.sh）"
+echo "（端到端链路复现：bash reproduce.sh；v1 对照产物：protocols/ttrl_seed*.json）"

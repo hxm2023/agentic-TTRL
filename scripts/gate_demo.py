@@ -27,6 +27,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
+from ttrl2.agent.loop import build_user_prompt  # noqa: E402
 from ttrl2.agent.transformers_loop import rollout_transformers  # noqa: E402
 from ttrl2.env.tau2_env import Tau2Episode  # noqa: E402
 from ttrl2.gates.global_gate import decide  # noqa: E402
@@ -103,11 +104,7 @@ def main() -> None:
     for i, task in enumerate(poison_tasks):
         r, ep = roll(policy_model, task)
         instr = task.user_scenario.instructions
-        tp = instr.task_instructions
-        if instr.known_info:
-            tp += f"\n\nKnown information: {instr.known_info}"
-        if instr.unknown_info:
-            tp += f"\n\nUnknown information: {instr.unknown_info}"
+        tp = build_user_prompt(task)
         identified = None
         for rc in ep.record.receipts:
             if rc.tool_name in ("find_user_id_by_name_zip", "find_user_id_by_email") and rc.ok:

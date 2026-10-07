@@ -19,6 +19,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
+from ttrl2.agent.loop import build_user_prompt  # noqa: E402
 from ttrl2.agent.loop import rollout  # noqa: E402
 from ttrl2.env.tau2_env import Tau2Episode  # noqa: E402
 from ttrl2.serving.vllm_client import ServedPolicy  # noqa: E402
@@ -78,11 +79,7 @@ def main() -> None:
     for i, task in enumerate(pool_tasks):
         ep = Tau2Episode(task)
         instr = task.user_scenario.instructions
-        up = instr.task_instructions
-        if instr.known_info:
-            up += f"\n\nKnown information: {instr.known_info}"
-        if instr.unknown_info:
-            up += f"\n\nUnknown information: {instr.unknown_info}"
+        up = build_user_prompt(task)
         r = rollout(sp.client, sp.base_model, ep, policy_doc, tools,
                     max_turns=20, max_tokens=256, temperature=0.7, seed=0,
                     system_override=sys_prompt, user_prompt_override=up)

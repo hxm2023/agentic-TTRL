@@ -14,6 +14,8 @@ hidden DB-state evaluation. No user simulator in the loop.
 """
 from __future__ import annotations
 
+import json
+import typing
 from copy import deepcopy
 
 from tau2.data_model.tasks import Task
@@ -22,6 +24,40 @@ from tau2.domains.retail.utils import RETAIL_DB_PATH
 from tau2.domains.retail.tools import RetailTools
 
 from ttrl2.env.receipts import EpisodeRecord, ToolReceipt
+
+
+def _coerce_arguments(fn, arguments: dict) -> dict:
+    """Normalize scalar arg types to the tool signature.
+
+    The two rollout engines parse the same XML differently: vLLM's qwen3_xml
+    parser keeps parameter values as strings, while the transformers-side
+    parser JSON-decodes them (zip "19122" -> 19122). The retail DB lookups
+    compare strings, so an int zip silently yields "User not found" and the
+    episode loops on read calls. Coerce at the tool boundary so both engines
+    behave identically.
+    """
+    try:
+        hints = typing.get_type_hints(fn)
+    except Exception:  # noqa: BLE001 — annotations unavailable -> no coercion
+        return arguments
+    out = dict(arguments)
+    for name, ann in hints.items():
+        if name not in out or name == "return":
+            continue
+        v = out[name]
+        if ann is str and not isinstance(v, str):
+            out[name] = json.dumps(v) if isinstance(v, (list, dict)) else str(v)
+        elif ann is int and isinstance(v, str):
+            try:
+                out[name] = int(v)
+            except ValueError:
+                pass
+        elif ann is float and isinstance(v, (int, str)):
+            try:
+                out[name] = float(v)
+            except ValueError:
+                pass
+    return out
 
 
 class Tau2Episode:
@@ -52,7 +88,7 @@ class Tau2Episode:
             self.record.receipts.append(receipt)
             return receipt
         try:
-            out = fn(**arguments)
+            out = fn(**_coerce_arguments(fn, arguments))
             receipt.ok = True
             receipt.output = out
         except Exception as e:  # noqa: BLE001 — tool failures are evidence, not crashes

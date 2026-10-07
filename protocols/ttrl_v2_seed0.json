@@ -1,0 +1,344 @@
+{
+ "mode": "ttrl",
+ "protocol": "v2.1_fixed_prompt_trimmed",
+ "note": "JSON reconstructed from the run log after the gate phase was killed; update_phase and eval are complete, gate phase is absent",
+ "meta": {
+  "seed": 0,
+  "n_update": 24,
+  "n_eval": 18,
+  "stream_file": "protocols/stream_v2_seed0_short.json"
+ },
+ "update_phase": [
+  {
+   "task_id": "6",
+   "success": false,
+   "rows": 6,
+   "drift": 0.1,
+   "halt": false
+  },
+  {
+   "task_id": "84",
+   "success": true,
+   "rows": 72,
+   "drift": 0.442,
+   "halt": false
+  },
+  {
+   "task_id": "38",
+   "success": true,
+   "rows": 88,
+   "drift": 0.406,
+   "halt": false
+  },
+  {
+   "task_id": "60",
+   "success": true,
+   "rows": 56,
+   "drift": 2.693,
+   "halt": false
+  },
+  {
+   "task_id": "103",
+   "success": true,
+   "rows": 64,
+   "drift": 3.088,
+   "halt": false
+  },
+  {
+   "task_id": "49",
+   "success": true,
+   "rows": 32,
+   "drift": 1.505,
+   "halt": false
+  },
+  {
+   "task_id": "79",
+   "success": true,
+   "rows": 80,
+   "drift": 2.278,
+   "halt": false
+  },
+  {
+   "task_id": "37",
+   "success": true,
+   "rows": 40,
+   "drift": 1.727,
+   "halt": false
+  },
+  {
+   "task_id": "7",
+   "success": true,
+   "rows": 32,
+   "drift": 2.647,
+   "halt": false
+  },
+  {
+   "task_id": "61",
+   "success": true,
+   "rows": 32,
+   "drift": 2.013,
+   "halt": false
+  },
+  {
+   "task_id": "28",
+   "success": true,
+   "rows": 48,
+   "drift": 2.197,
+   "halt": false
+  },
+  {
+   "task_id": "23",
+   "success": true,
+   "rows": 64,
+   "drift": 2.311,
+   "halt": false
+  },
+  {
+   "task_id": "36",
+   "success": false,
+   "rows": 0,
+   "drift": 1.882,
+   "halt": false
+  },
+  {
+   "task_id": "42",
+   "success": true,
+   "rows": 48,
+   "drift": 2.637,
+   "halt": false
+  },
+  {
+   "task_id": "43",
+   "success": true,
+   "rows": 32,
+   "drift": 1.971,
+   "halt": false
+  },
+  {
+   "task_id": "108",
+   "success": true,
+   "rows": 40,
+   "drift": 1.677,
+   "halt": false
+  },
+  {
+   "task_id": "52",
+   "success": true,
+   "rows": 40,
+   "drift": 2.262,
+   "halt": false
+  },
+  {
+   "task_id": "94",
+   "success": false,
+   "rows": 3,
+   "drift": 1.62,
+   "halt": false
+  },
+  {
+   "task_id": "111",
+   "success": true,
+   "rows": 72,
+   "drift": 2.088,
+   "halt": false
+  },
+  {
+   "task_id": "31",
+   "success": false,
+   "rows": 6,
+   "drift": 2.187,
+   "halt": false
+  },
+  {
+   "task_id": "21",
+   "success": true,
+   "rows": 64,
+   "drift": 1.647,
+   "halt": false
+  },
+  {
+   "task_id": "30",
+   "success": false,
+   "rows": 0,
+   "drift": 1.709,
+   "halt": false
+  },
+  {
+   "task_id": "35",
+   "success": false,
+   "rows": 6,
+   "drift": 2.353,
+   "halt": false
+  },
+  {
+   "task_id": "109",
+   "success": true,
+   "rows": 56,
+   "drift": 2.331,
+   "halt": false
+  }
+ ],
+ "eval": {
+  "frozen": [
+   {
+    "task_id": "110",
+    "success": true
+   },
+   {
+    "task_id": "33",
+    "success": true
+   },
+   {
+    "task_id": "16",
+    "success": true
+   },
+   {
+    "task_id": "104",
+    "success": false
+   },
+   {
+    "task_id": "27",
+    "success": true
+   },
+   {
+    "task_id": "81",
+    "success": false
+   },
+   {
+    "task_id": "55",
+    "success": false
+   },
+   {
+    "task_id": "63",
+    "success": true
+   },
+   {
+    "task_id": "87",
+    "success": true
+   },
+   {
+    "task_id": "56",
+    "success": true
+   },
+   {
+    "task_id": "76",
+    "success": true
+   },
+   {
+    "task_id": "90",
+    "success": true
+   },
+   {
+    "task_id": "95",
+    "success": false
+   },
+   {
+    "task_id": "66",
+    "success": false
+   },
+   {
+    "task_id": "15",
+    "success": false
+   },
+   {
+    "task_id": "40",
+    "success": true
+   },
+   {
+    "task_id": "70",
+    "success": true
+   },
+   {
+    "task_id": "85",
+    "success": true
+   }
+  ],
+  "candidate": [
+   {
+    "task_id": "110",
+    "success": false
+   },
+   {
+    "task_id": "33",
+    "success": true
+   },
+   {
+    "task_id": "16",
+    "success": true
+   },
+   {
+    "task_id": "104",
+    "success": false
+   },
+   {
+    "task_id": "27",
+    "success": true
+   },
+   {
+    "task_id": "81",
+    "success": true
+   },
+   {
+    "task_id": "55",
+    "success": true
+   },
+   {
+    "task_id": "63",
+    "success": false
+   },
+   {
+    "task_id": "87",
+    "success": true
+   },
+   {
+    "task_id": "56",
+    "success": true
+   },
+   {
+    "task_id": "76",
+    "success": true
+   },
+   {
+    "task_id": "90",
+    "success": true
+   },
+   {
+    "task_id": "95",
+    "success": false
+   },
+   {
+    "task_id": "66",
+    "success": true
+   },
+   {
+    "task_id": "15",
+    "success": false
+   },
+   {
+    "task_id": "40",
+    "success": true
+   },
+   {
+    "task_id": "70",
+    "success": true
+   },
+   {
+    "task_id": "85",
+    "success": true
+   }
+  ],
+  "frozen_rate": 0.6666666666666666,
+  "candidate_rate": 0.7222222222222222
+ },
+ "config": {
+  "steps": 3,
+  "lr": 1e-05,
+  "kl_beta": 0.1,
+  "update_temp": 0.7,
+  "eval_samples": 1,
+  "max_rows": 20,
+  "max_seq_len": 8192,
+  "engine": "transformers",
+  "thinking": true
+ }
+}

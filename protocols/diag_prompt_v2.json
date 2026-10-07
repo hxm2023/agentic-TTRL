@@ -1,0 +1,347 @@
+{
+ "mode": "diag_prompt_v2",
+ "tasks": {
+  "1": {
+   "n_write_actions": 1,
+   "arms": {
+    "v1_prompt": [
+     {
+      "success": false,
+      "turns": 4,
+      "n_calls": 1,
+      "n_modify": 0,
+      "calls": [
+       "find_user_id_by_name_zip"
+      ]
+     },
+     {
+      "success": false,
+      "turns": 4,
+      "n_calls": 1,
+      "n_modify": 0,
+      "calls": [
+       "find_user_id_by_name_zip"
+      ]
+     }
+    ],
+    "v2_prompt": [
+     {
+      "success": true,
+      "turns": 9,
+      "n_calls": 6,
+      "n_modify": 1,
+      "calls": [
+       "find_user_id_by_name_zip",
+       "get_order_details",
+       "get_product_details",
+       "get_product_details",
+       "get_user_details",
+       "exchange_delivered_order_items"
+      ]
+     },
+     {
+      "success": true,
+      "turns": 9,
+      "n_calls": 6,
+      "n_modify": 1,
+      "calls": [
+       "find_user_id_by_name_zip",
+       "get_order_details",
+       "get_product_details",
+       "get_product_details",
+       "get_user_details",
+       "exchange_delivered_order_items"
+      ]
+     }
+    ]
+   }
+  },
+  "108": {
+   "n_write_actions": 1,
+   "arms": {
+    "v1_prompt": [
+     {
+      "success": false,
+      "turns": 11,
+      "n_calls": 8,
+      "n_modify": 0,
+      "calls": [
+       "find_user_id_by_name_zip",
+       "get_user_details",
+       "get_order_details",
+       "get_order_details",
+       "get_order_details",
+       "get_order_details",
+       "get_order_details",
+       "get_order_details"
+      ]
+     },
+     {
+      "success": false,
+      "turns": 5,
+      "n_calls": 2,
+      "n_modify": 0,
+      "calls": [
+       "find_user_id_by_name_zip",
+       "get_user_details"
+      ]
+     }
+    ],
+    "v2_prompt": [
+     {
+      "success": true,
+      "turns": 9,
+      "n_calls": 6,
+      "n_modify": 1,
+      "calls": [
+       "find_user_id_by_name_zip",
+       "get_user_details",
+       "get_order_details",
+       "get_order_details",
+       "get_order_details",
+       "return_delivered_order_items"
+      ]
+     },
+     {
+      "success": true,
+      "turns": 9,
+      "n_calls": 6,
+      "n_modify": 1,
+      "calls": [
+       "find_user_id_by_name_zip",
+       "get_user_details",
+       "get_order_details",
+       "get_order_details",
+       "get_order_details",
+       "return_delivered_order_items"
+      ]
+     }
+    ]
+   }
+  },
+  "25": {
+   "n_write_actions": 0,
+   "arms": {
+    "v1_prompt": [
+     {
+      "success": true,
+      "turns": 4,
+      "n_calls": 1,
+      "n_modify": 0,
+      "calls": [
+       "find_user_id_by_name_zip"
+      ]
+     },
+     {
+      "success": true,
+      "turns": 4,
+      "n_calls": 1,
+      "n_modify": 0,
+      "calls": [
+       "find_user_id_by_name_zip"
+      ]
+     }
+    ],
+    "v2_prompt": [
+     {
+      "success": false,
+      "turns": 9,
+      "n_calls": 6,
+      "n_modify": 1,
+      "calls": [
+       "find_user_id_by_name_zip",
+       "get_user_details",
+       "get_order_details",
+       "get_order_details",
+       "get_order_details",
+       "return_delivered_order_items"
+      ]
+     },
+     {
+      "success": false,
+      "turns": 10,
+      "n_calls": 7,
+      "n_modify": 1,
+      "calls": [
+       "find_user_id_by_name_zip",
+       "get_user_details",
+       "get_order_details",
+       "get_order_details",
+       "get_order_details",
+       "get_order_details",
+       "return_delivered_order_items"
+      ]
+     }
+    ]
+   }
+  },
+  "30": {
+   "n_write_actions": 3,
+   "arms": {
+    "v1_prompt": [
+     {
+      "success": false,
+      "turns": 4,
+      "n_calls": 1,
+      "n_modify": 0,
+      "calls": [
+       "find_user_id_by_name_zip"
+      ]
+     },
+     {
+      "success": false,
+      "turns": 4,
+      "n_calls": 1,
+      "n_modify": 0,
+      "calls": [
+       "find_user_id_by_name_zip"
+      ]
+     }
+    ],
+    "v2_prompt": [
+     {
+      "success": false,
+      "turns": 11,
+      "n_calls": 8,
+      "n_modify": 0,
+      "calls": [
+       "find_user_id_by_name_zip",
+       "get_user_details",
+       "get_order_details",
+       "get_order_details",
+       "get_order_details",
+       "get_order_details",
+       "get_order_details",
+       "get_product_details"
+      ]
+     },
+     {
+      "success": false,
+      "turns": 11,
+      "n_calls": 8,
+      "n_modify": 0,
+      "calls": [
+       "find_user_id_by_name_zip",
+       "get_user_details",
+       "get_order_details",
+       "get_order_details",
+       "get_order_details",
+       "get_order_details",
+       "get_order_details",
+       "get_product_details"
+      ]
+     }
+    ]
+   }
+  },
+  "44": {
+   "n_write_actions": 1,
+   "arms": {
+    "v1_prompt": [
+     {
+      "success": false,
+      "turns": 4,
+      "n_calls": 1,
+      "n_modify": 0,
+      "calls": [
+       "find_user_id_by_name_zip"
+      ]
+     },
+     {
+      "success": false,
+      "turns": 5,
+      "n_calls": 2,
+      "n_modify": 0,
+      "calls": [
+       "find_user_id_by_name_zip",
+       "get_user_details"
+      ]
+     }
+    ],
+    "v2_prompt": [
+     {
+      "success": true,
+      "turns": 8,
+      "n_calls": 5,
+      "n_modify": 1,
+      "calls": [
+       "find_user_id_by_name_zip",
+       "get_order_details",
+       "get_product_details",
+       "get_user_details",
+       "modify_pending_order_items"
+      ]
+     },
+     {
+      "success": true,
+      "turns": 9,
+      "n_calls": 6,
+      "n_modify": 1,
+      "calls": [
+       "find_user_id_by_name_zip",
+       "get_order_details",
+       "get_product_details",
+       "calculate",
+       "get_user_details",
+       "modify_pending_order_items"
+      ]
+     }
+    ]
+   }
+  },
+  "65": {
+   "n_write_actions": 0,
+   "arms": {
+    "v1_prompt": [
+     {
+      "success": true,
+      "turns": 6,
+      "n_calls": 3,
+      "n_modify": 0,
+      "calls": [
+       "find_user_id_by_name_zip",
+       "get_user_details",
+       "get_order_details"
+      ]
+     },
+     {
+      "success": true,
+      "turns": 4,
+      "n_calls": 1,
+      "n_modify": 0,
+      "calls": [
+       "find_user_id_by_name_zip"
+      ]
+     }
+    ],
+    "v2_prompt": [
+     {
+      "success": true,
+      "turns": 6,
+      "n_calls": 3,
+      "n_modify": 0,
+      "calls": [
+       "find_user_id_by_name_zip",
+       "get_user_details",
+       "get_order_details"
+      ]
+     },
+     {
+      "success": true,
+      "turns": 7,
+      "n_calls": 4,
+      "n_modify": 0,
+      "calls": [
+       "find_user_id_by_name_zip",
+       "get_user_details",
+       "get_order_details",
+       "transfer_to_human_agents"
+      ]
+     }
+    ]
+   }
+  }
+ },
+ "endpoint": "http://localhost:8002/v1",
+ "elapsed_s": 362.3
+}
