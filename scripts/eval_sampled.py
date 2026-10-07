@@ -80,16 +80,24 @@ def main() -> None:
         from ttrl2.agent.transformers_loop import rollout_transformers
         from ttrl2.trainer.lora_update import make_lora_model
         tokenizer = AutoTokenizer.from_pretrained(args.model_dir)
-        base = AutoModelForCausalLM.from_pretrained(
-            args.model_dir, dtype=torch.bfloat16, device_map={"": 0})
-        base.eval()
-        policy_model = make_lora_model(base)
-        policy_model.eval()
         from peft import PeftModel
-        cand = PeftModel.from_pretrained(policy_model, args.adapter)
-        cand.eval()
-        models = {"frozen": policy_model, "candidate": cand}
-        models = {k: v for k, v in models.items() if args.arms in ("both", k)}
+
+        def load_base():
+            m = AutoModelForCausalLM.from_pretrained(
+                args.model_dir, dtype=torch.bfloat16, device_map={"": 0})
+            m.eval()
+            return m
+
+        models = {}
+        if args.arms in ("both", "frozen"):
+            models["frozen"] = load_base()
+        if args.arms in ("both", "candidate"):
+            # load the trained adapter onto a PLAIN base: wrapping the base in
+            # a fresh LoRA first and loading on top yields an all-zero adapter
+            # (silently making candidate == frozen)
+            cand = PeftModel.from_pretrained(load_base(), args.adapter)
+            cand.eval()
+            models["candidate"] = cand
 
     results = {"stream": args.stream, "adapter": args.adapter, "k": args.k,
                "temperature": args.temperature, "engine": args.engine,
